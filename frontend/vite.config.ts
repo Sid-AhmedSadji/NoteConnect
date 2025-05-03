@@ -6,10 +6,9 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "::",
+    host: process.env.VITE_HOST || 'localhost',
     port: Number(process.env.VITE_PORT) || 5173,
   },
   plugins: [

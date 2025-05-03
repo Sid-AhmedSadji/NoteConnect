@@ -10,6 +10,7 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: Number(process.env.VITE_PORT) || 5173,
+    allowedHosts:process.env.VITE_ALLOWED_HOSTS ? process.env.VITE_ALLOWED_HOSTS.split(',') : [],
   },
   plugins: [
     react(),

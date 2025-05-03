@@ -1,5 +1,5 @@
 const { ObjectId } = require('mongodb');
-const CustomError = require('../models/customError');
+const CustomError = require('../models/CustomError');
 
 const validateObjectId = (req, res, next) => {
     try {

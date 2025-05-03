@@ -1,4 +1,4 @@
-const CustomError = require('../models/customError');
+const CustomError = require('../models/CustomError');
 
 const isAuthenticated = (req, res, next) => {
   try{

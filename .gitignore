@@ -1,0 +1,45 @@
+.qodo
+
+
+# Fichiers spécifiques à l'environnement
+.DS_Store
+Thumbs.db
+
+# Fichiers générés par l'éditeur
+.idea/
+.vscode/
+
+# Logs et fichiers temporaires
+*.log
+*.tmp
+*.bak
+*.swp
+
+# Fichiers de compilation
+*.out
+*.class
+*.exe
+*.dll
+*.so
+*.o
+*.obj
+
+# Dépendances de package
+node_modules/
+vendor/
+
+# Fichiers de configuration système ou secrets
+.env
+config.php
+
+# Bases de données locales
+*.sqlite
+*.db
+
+# Fichiers spécifiques à certains frameworks
+public/uploads/
+storage/
+tmp/
+
+# Ignorer tout sauf les fichiers source dans certains dossiers
+!.gitignore

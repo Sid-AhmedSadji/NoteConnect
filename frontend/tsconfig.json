@@ -9,7 +9,6 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "jsx": "react-jsx",
     "noImplicitAny": false,
     "noUnusedParameters": false,
     "skipLibCheck": true,

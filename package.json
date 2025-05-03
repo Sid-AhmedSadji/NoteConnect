@@ -5,6 +5,7 @@
   "scripts": {
   "install:backend": "npm install --workspace backend",
   "install:frontend": "npm install --workspace frontend",
+  "install:models": "npm install --workspace models",
   "install:all": "npm install --workspace backend --workspace frontend",
   "start:backend": "npm run start --workspace backend",
   "start:frontend": "npm run dev --workspace frontend",

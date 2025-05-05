@@ -6,10 +6,13 @@ import session from './session.js';
 import config from '../config/env.js';
 
 const globalMiddlewares = (app) => {
+    
     app.use(cors({
         origin: config.FRONTEND_IP,
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
+
     }));
 
     if (config.NODE_ENV === 'development') {

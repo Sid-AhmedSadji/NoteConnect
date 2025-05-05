@@ -6,10 +6,11 @@ import session from './session.js';
 import config from '../config/env.js';
 
 const globalMiddlewares = (app) => {
+
     
     app.use(cors({
         origin: (origin, callback) => {
-            if (!origin || config.FRONTEND_IPS.includes(origin.trim())) { // Ajout du trim() pour éviter les espaces
+            if (!origin || config.FRONTEND_IP.includes(origin.trim())) { // Ajout du trim() pour éviter les espaces
                 callback(null, true);
             } else {
                 callback(new Error("Not allowed by CORS"));

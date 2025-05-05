@@ -1,11 +1,11 @@
-const express = require('express');
-const userRoutes = require('./userRoutes');
-const NoteRoutes = require('./noteRoutes');
-const authMiddleware = require('../middlewares/authMiddleware');
+import express from 'express';
+import authMiddleware from '../middlewares/authMiddleware.js';
+import userRoutes from './userRoutes.js';
+import noteRoutes from './noteRoutes.js';
 
 const router = express.Router();
 
 router.use('/user', userRoutes);
-router.use('/notes', authMiddleware, NoteRoutes);
+router.use('/notes', authMiddleware, noteRoutes);
 
-module.exports = router;
+export default router;

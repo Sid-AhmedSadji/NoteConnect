@@ -1,9 +1,10 @@
-const { connectDB } = require('../config/db');
-const config = require('../config/env');
-const {Note} = require('models'); 
-const CustomError = require('../models/CustomError');
-const bcrypt = require('bcrypt');
-const { ObjectId } = require('mongodb');
+import { connectDB } from '../config/db.js';
+import config from '../config/env.js';
+import { Note } from 'models';
+import CustomError from '../models/CustomError.js';
+import bcrypt from 'bcrypt';
+import { ObjectId } from 'mongodb';
+
 
 const collectionName = config.MONGO_NOTE_COLLECTION_NAME;
 
@@ -11,17 +12,19 @@ const errorMessages = {
     noteNotFound: 'Note not found',
 };
 
+
 const getNotes = async (req, res, next) => {
     try {
         const client = await connectDB();
         const collection = client.collection(collectionName);
-        const notes = await collection.find({ owner: req.ownerId }).toArray()
+        const notes = await collection.find({ owner: req.ownerId }).toArray();
         res.status(200).json({ message: 'Notes fetched successfully', data: notes });
     } catch (error) {
         if (config.NODE_ENV === 'development') console.error('Error fetching notes:', error);
         next(error);
     }
 };
+
 
 const createNote = async (req, res, next) => {
     try {
@@ -206,12 +209,4 @@ const checkLink = async (link) => {
     }
 };
 
-module.exports = {
-    getNotes,
-    createNote,
-    deleteNote,
-    updateNote,
-    calculNotes,
-    pingNotes
-
-};
+export { getNotes, createNote, deleteNote, updateNote, calculNotes, pingNotes };

@@ -1,21 +1,18 @@
-const cors = require('cors');
-const helmet = require('helmet');
-const cookieParser = require('cookie-parser');
-const express = require('express');
-const session = require('./session');
-const config = require('../config/env');
+import cors from 'cors';
+import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
+import express from 'express';
+import session from './session.js';
+import config from '../config/env.js';
 
 const globalMiddlewares = (app) => {
-
-        
     app.use(cors({
         origin: config.FRONTEND_IP,
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
     }));
 
-    
-    if ( config.NODE_ENV === 'development') {
+    if (config.NODE_ENV === 'development') {
         app.use((req, res, next) => {
             console.log(`Request: ${req.method} ${req.url}`);
             next();
@@ -29,7 +26,6 @@ const globalMiddlewares = (app) => {
     }));
     app.use(express.json());
     app.use(cookieParser());
-
 };
 
-module.exports = globalMiddlewares;
+export default globalMiddlewares;

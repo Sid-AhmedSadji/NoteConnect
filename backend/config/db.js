@@ -1,5 +1,5 @@
-const { MongoClient } = require('mongodb');
-const config = require('./env');
+import { MongoClient } from 'mongodb';
+import config from './env.js';
 
 let client;
 let database;
@@ -15,7 +15,7 @@ const connectDB = async () => {
         return database;
     } catch (error) {
         console.error(`❌ Erreur de connexion MongoDB : ${error.message}`);
-        process.exit(1); 
+        process.exit(1);
     }
 };
 
@@ -26,8 +26,4 @@ const closeDB = async () => {
     }
 };
 
-module.exports = {
-    connectDB,
-    closeDB,
-    getDb: () => database
-};
+export { connectDB, closeDB, database as getDb };

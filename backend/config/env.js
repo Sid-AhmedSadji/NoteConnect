@@ -1,4 +1,6 @@
-require('dotenv').config();
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 if (!process.env.MONGO_URI) 
     throw new Error('MONGO_URI is not defined in the environment variables');
@@ -15,7 +17,7 @@ if (!process.env.MONGO_NOTE_COLLECTION_NAME)
 if (!process.env.FRONTEND_IP)
     throw new Error('FRONTEND_IP is not defined in the environment variables');
 
-module.exports = {
+export default {
     PORT: process.env.PORT || 7000,
     NODE_ENV: process.env.NODE_ENV || 'developpement',
     SESSION_SECRET: process.env.SESSION_SECRET || 'defaultSecret',
@@ -26,4 +28,3 @@ module.exports = {
     FRONTEND_IP: process.env.FRONTEND_IP,
     COOKIES_MAX_AGE: parseInt(process.env.COOKIES_MAX_AGE) || 24 * 60 * 60 * 1000
 };
-

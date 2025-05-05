@@ -1,8 +1,8 @@
-const { connectDB } = require('../config/db');
-const config = require('../config/env');
-const { User } = require('models');
-const CustomError = require('../models/CustomError');
-const bcrypt = require('bcrypt');
+import { connectDB } from '../config/db.js';
+import config from '../config/env.js';
+import { User } from 'models';
+import CustomError from '../models/CustomError.js';
+import bcrypt from 'bcrypt';
 
 const collectionName = config.MONGO_USER_COLLECTION_NAME;
 
@@ -226,7 +226,7 @@ const verifyPassword = async (req, res, next) => {
     }
 };
 
-module.exports = {
+export {
     createUser,
     updateUser,
     deleteUser,

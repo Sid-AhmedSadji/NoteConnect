@@ -1,8 +1,8 @@
-const express = require('express');
-const router = express.Router();
-const {validateObjectId, validateOwnerObjectId} = require('../middlewares/validateObjectId');
+import express from 'express';
+import { validateObjectId, validateOwnerObjectId } from '../middlewares/validateObjectId.js';
+import { getNotes, createNote, deleteNote, updateNote, calculNotes, pingNotes } from '../controllers/noteController.js';
 
-const {  getNotes, createNote,deleteNote, updateNote, calculNotes, pingNotes,   } = require('../controllers/noteController');
+const router = express.Router();
 
 router.get('/', validateOwnerObjectId,getNotes);
 router.post('/', validateOwnerObjectId,createNote);
@@ -11,4 +11,4 @@ router.delete('/:id', validateObjectId, deleteNote);
 router.post('/calcul-notes', validateOwnerObjectId,calculNotes);
 router.post('/ping',  pingNotes);
 
-module.exports = router;
+export default router;

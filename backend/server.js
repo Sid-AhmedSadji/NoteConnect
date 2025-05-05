@@ -1,10 +1,10 @@
-require('dotenv').config();
-const express = require('express');
-const config = require('./config/env');
-const globalMiddlewares = require('./middlewares/globalMiddlewares');
-const { closeDB } = require('./config/db');
-const routes = require('./routes/index.js');
-const errorHandler = require('./middlewares/errorHandler');
+import 'dotenv/config';
+import express from 'express';
+import config from './config/env.js';
+import globalMiddlewares from './middlewares/globalMiddlewares.js';
+import { closeDB } from './config/db.js';
+import routes from './routes/index.js';
+import errorHandler from './middlewares/errorHandler.js';
 
 const app = express();
 const PORT = config.PORT;
@@ -22,7 +22,6 @@ app.use(errorHandler);
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
-
 
 process.on('SIGINT', async () => {
     console.log('Closing MongoDB connection...');

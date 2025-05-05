@@ -1,16 +1,16 @@
-const session = require('express-session');
-const config = require('../config/env');
-const { parse } = require('dotenv');
+import session from 'express-session';
+import config from '../config/env.js';
+import { parse } from 'dotenv';
 
 const sessionConfig = {
     secret: config.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: {
-        secure: config.NODE_ENV === 'production', 
-        httpOnly: true, 
+        secure: config.NODE_ENV === 'production',
+        httpOnly: true,
         maxAge: config.COOKIES_MAX_AGE
     },
 };
 
-module.exports = session(sessionConfig);
+export default session(sessionConfig);

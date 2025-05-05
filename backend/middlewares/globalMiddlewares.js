@@ -8,11 +8,16 @@ import config from '../config/env.js';
 const globalMiddlewares = (app) => {
     
     app.use(cors({
-        origin: config.FRONTEND_IP,
+        origin: (origin, callback) => {
+            if (!origin || config.FRONTEND_IPS.includes(origin.trim())) { // Ajout du trim() pour éviter les espaces
+                callback(null, true);
+            } else {
+                callback(new Error("Not allowed by CORS"));
+            }
+        },
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
         allowedHeaders: ['Content-Type', 'Authorization'],
-
     }));
 
     if (config.NODE_ENV === 'development') {

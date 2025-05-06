@@ -50,7 +50,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (authState.isAuthenticated) {
       fetchNotes();
     } else {
-      setNotes([]); // On vide les notes si l'utilisateur se déconnecte
+      setNotes([]);
     }
   }, [authState.isAuthenticated]);
 
@@ -62,12 +62,18 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     else if (filterOption === 'dead') result = result.filter(note => note.isDead);
 
     if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(note =>
-        note.name.toLowerCase().includes(query) ||
-        note.link.toLowerCase().includes(query)
-      );
-    }
+      if (searchQuery.trim().length === 0) return;
+      const rawQuery = searchQuery.trim().toLowerCase();
+      const formattedQuery = Note.formatName(searchQuery).toLowerCase();
+  
+      result = result.filter(note => {
+          return (
+              note.name.toLowerCase().includes(rawQuery) ||
+              note.name.toLowerCase().includes(formattedQuery) ||
+              note.link.toLowerCase().includes(rawQuery)
+          );
+      });
+  }
 
     result.sort((a, b) => {
       if (sortOption === 'name') return a.name.localeCompare(b.name);

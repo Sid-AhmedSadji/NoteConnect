@@ -1,7 +1,5 @@
 import axios from 'axios';
 
-console.log(import.meta.env.VITE_API_URL);
-
 if (!import.meta.env.VITE_API_URL) 
     throw new Error('REACT_APP_API_URL is not defined in the environment variables');
 

@@ -9,8 +9,8 @@ export default class Note {
         if (!owner) throw new Error("Invalid owner: Owner must be provided.");
         this._id = _id;
         this.link = link;
-        this.name = this.formateName(name);
-        this.date = this.formateDate(date);
+        this.name = this.formatName(name);
+        this.date = this.formatDate(date);
         this.isDead = isDead;
         this.modificationCount = modificationCount;
         this.note = note;
@@ -18,17 +18,20 @@ export default class Note {
         this.owner = owner;
     }
 
-    formateName(name) {
+    static formatName(name) {
         if (typeof name !== 'string' || name.trim() === '') throw new Error("Invalid name: Must be a non-empty string.");
-        const trimmedName = name.trim();
-        return trimmedName.charAt(0).toUpperCase() + trimmedName.slice(1).toLowerCase();
+        let formattedName = name.trim().replace(/[^a-zA-Z0-9&]+/g, '_');
+        formattedName = formattedName.replace(/_{2,}/g, '_');
+        formattedName = formattedName.replace(/_$/, '');
+        return formattedName.charAt(0).toUpperCase() + formattedName.slice(1);
     }
+    
 
     checkInteger(value) {
         return typeof value === 'number' && Number.isInteger(value);
     }
 
-    formateDate(value) {
+    formatDate(value) {
         if (value instanceof Date)
             return value;
         try {
@@ -40,16 +43,17 @@ export default class Note {
     checkBoolean(value) {
         return typeof value === 'boolean';
     }
-
     updateNote(updatedFields) {
         const updatedNote = new Note({
             ...this.toJSON(),
             ...updatedFields,
-            modificationCount: this.modificationCount + 1,
+            modificationCount: (this.modificationCount || 0) + 1,
+            date: new Date(),
         });
-
-        Object.assign(this, updatedNote);
+    
+        return updatedNote;
     }
+    
 
     toJSON() {
         return {

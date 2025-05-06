@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { Note } from 'models';
 import { formatDistanceToNow } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { da, fr } from 'date-fns/locale';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -26,6 +26,7 @@ import {
   AlertDialogCancel,
   AlertDialogAction
 } from '@/components/ui/alert-dialog';
+import { link } from 'fs';
 
 interface NoteCardProps {
   note: Note;
@@ -39,10 +40,11 @@ const NoteCard: React.FC<NoteCardProps> = ({ note, UpdateNote, onDelete }) => {
   const [nameValue, setNameValue] = useState(note.name);
 
   const handleSave = () => {
-    const updatedNote = new Note({ ...note, link: linkValue, name: nameValue });
+    const updatedNote = note.updateNote({ link: linkValue, name: nameValue });
     UpdateNote(updatedNote);
     setIsEditing(false);
-  };
+};
+
 
   const handleCancel = () => {
     setLinkValue(note.link);
@@ -146,6 +148,7 @@ const NoteCard: React.FC<NoteCardProps> = ({ note, UpdateNote, onDelete }) => {
                 value={linkValue}
                 onChange={(e) => setLinkValue(e.target.value)}
                 className="flex-1 h-8 text-sm"
+                onFocus={(e) => e.target.select()}
               />
               <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleSave}>
                 <CheckIcon size={16} />

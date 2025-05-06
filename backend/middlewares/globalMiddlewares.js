@@ -7,7 +7,11 @@ import config from '../config/env.js';
 
 const globalMiddlewares = (app) => {
 
-    console.log('Request Headers:', req.headers);
+    app.use((req, res, next) => {
+        console.log('Request Headers:', req.headers);
+        next();
+    });
+    
 
     
     app.use(cors({

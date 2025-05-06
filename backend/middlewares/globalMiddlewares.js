@@ -7,6 +7,8 @@ import config from '../config/env.js';
 
 const globalMiddlewares = (app) => {
 
+    console.log('Request Headers:', req.headers);
+
     
     app.use(cors({
         origin: (origin, callback) => {

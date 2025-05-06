@@ -15,15 +15,7 @@ const globalMiddlewares = (app) => {
 
     
     app.use(cors({
-        origin: (origin, callback) => {
-            console.log(origin);
-            console.log(config.FRONTEND_IP);
-            if (!origin || config.FRONTEND_IP.includes(origin.trim())) {
-                callback(null, true);
-            } else {
-                callback(new Error("Not allowed by CORS"));
-            }
-        },
+        origin: config.FRONTEND_IP,
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
         allowedHeaders: ['Content-Type', 'Authorization'],

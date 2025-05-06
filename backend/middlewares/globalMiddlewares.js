@@ -10,7 +10,9 @@ const globalMiddlewares = (app) => {
     
     app.use(cors({
         origin: (origin, callback) => {
-            if (!origin || config.FRONTEND_IP.includes(origin.trim())) { // Ajout du trim() pour éviter les espaces
+            console.log(origin);
+            console.log(config.FRONTEND_IP);
+            if (!origin || config.FRONTEND_IP.includes(origin.trim())) {
                 callback(null, true);
             } else {
                 callback(new Error("Not allowed by CORS"));

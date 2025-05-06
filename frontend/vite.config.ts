@@ -12,6 +12,9 @@ export default defineConfig(({ mode }) => ({
     port: Number(process.env.VITE_PORT) || 5173,
     allowedHosts:process.env.VITE_ALLOWED_HOSTS ? process.env.VITE_ALLOWED_HOSTS.split(',') : [],
   },
+  preview: {
+    port: Number(process.env.VITE_PORT) || 8080, // Preview mode should use 8080
+  },
   plugins: [
     react(),
     mode === 'development' &&

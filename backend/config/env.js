@@ -25,6 +25,6 @@ export default {
     MONGO_DB_NAME: process.env.MONGO_DB_NAME,
     MONGO_USER_COLLECTION_NAME: process.env.MONGO_USER_COLLECTION_NAME,
     MONGO_NOTE_COLLECTION_NAME: process.env.MONGO_NOTE_COLLECTION_NAME,
-    FRONTEND_IP: process.env.FRONTEND_IP.trim(),
+    FRONTEND_IP: process.env.FRONTEND_IP.split(','),
     COOKIES_MAX_AGE: parseInt(process.env.COOKIES_MAX_AGE) || 24 * 60 * 60 * 1000
 };

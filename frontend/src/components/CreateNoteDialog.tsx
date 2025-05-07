@@ -6,6 +6,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/
 import { Input } from '@/components/ui/input';
 import { PlusIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
+import { useToast } from '@/hooks/use-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useNotes } from '@/contexts/NotesContext';
@@ -16,6 +17,7 @@ const formSchema = z.object({
 });
 
 const CreateNoteDialog = () => {
+  const { toast } = useToast();
   const { addNote } = useNotes();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -26,12 +28,25 @@ const CreateNoteDialog = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    addNote({
-      name: values.name,
-      link: values.link,
-      isDead: false,
-    });
-    form.reset();
+    try {
+      await addNote({
+        name: values.name,
+        link: values.link
+      });
+      toast({
+        title: "Note crée",
+        description: "La note a bien été crée",
+      })
+      form.reset();
+    } catch (error) {
+      if (error instanceof Error) {
+        toast({
+          title: "Une erreur est survenue",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
+    }
   };
 
   return (

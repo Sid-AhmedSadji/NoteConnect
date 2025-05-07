@@ -9,7 +9,7 @@ export default class Note {
         if (!owner) throw new Error("Invalid owner: Owner must be provided.");
         this._id = _id;
         this.link = link;
-        this.name = this.formatName(name);
+        this.name = Note.formatName(name);
         this.date = this.formatDate(date);
         this.isDead = isDead;
         this.modificationCount = modificationCount;

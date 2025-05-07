@@ -33,7 +33,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           isLoading: false,
         });
       } catch(error) {
-        console.log(error);
         setAuthState({
           user: null,
           isAuthenticated: false,
@@ -54,7 +53,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading: false,
       });
     } catch (error) {
-      throw error;
+      throw error.response.data.message;
     }
   };
 
@@ -62,7 +61,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await UserApi.register({ username, password });
     } catch (error) {
-      throw error;
+      throw error.response.data.message;
     }
   };
 
@@ -75,7 +74,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading: false,
       });
     } catch (error) {
-      throw error;
+      throw error.response.data.message;
     }
   };
 
@@ -90,7 +89,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading: false,
       });
     } catch (error) {
-      throw error;
+      throw error.response.data.message;
     }
   };
 
@@ -103,7 +102,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading: false,
       });
     } catch (error) {
-      throw error;
+      throw error.response.data.message;
     }
   };
 
@@ -111,7 +110,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await UserApi.verifyPassword({ password });
     } catch (error) {
-      throw error;
+      throw error.response.data.message;
     }
   };
 

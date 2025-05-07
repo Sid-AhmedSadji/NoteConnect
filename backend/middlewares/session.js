@@ -8,13 +8,13 @@ const sessionConfig = {
   saveUninitialized: false,
   store: MongoStore.create({
     mongoUrl: config.MONGO_URI,
-    ttl: 14 * 24 * 60 * 60,
+    ttl: config.COOKIES_MAX_AGE,
   }),
   cookie: {
     secure: config.NODE_ENV === 'production',
-    httpOnly: true,
+    httpOnly: config.NODE_ENV === 'production',
     maxAge: config.COOKIES_MAX_AGE,
-    sameSite: 'none',
+    sameSite: config.NODE_ENV === 'production' ? 'none' : undefined 
   },
 };
 

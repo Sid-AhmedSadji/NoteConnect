@@ -25,7 +25,7 @@ const Login: React.FC = () => {
     try {
       await login(username, password);
     } catch (err) {
-      setError('Identifiants invalides. Essayez test@example.com / password');
+      setError('Erreur lors de l\'authentification :\n' + err);
     } finally {
       setLoading(false);
     }

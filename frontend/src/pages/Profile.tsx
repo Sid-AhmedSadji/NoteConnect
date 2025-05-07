@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { User, Settings, AlertCircleIcon } from 'lucide-react';
 import Header from '@/components/Header';
 import {User as MyUser} from 'models'
+import { set } from 'date-fns';
 
 const Profile = () => {
   const { authState, updateProfile, logout } = useAuth();
@@ -20,6 +21,7 @@ const Profile = () => {
   const [formData, setFormData] = React.useState({
     username: authState.user?.username || '',
     password: authState.user?.password || '',
+    confirmPassword: authState.user?.password || '',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,10 +33,18 @@ const Profile = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    
+    if (formData.password !== formData.confirmPassword) {
+      setError('Les mots de passe ne correspondent pas');
+      return;
+    }
+
     if (!MyUser.checkPassword(formData.password)) {
       setError('Le mot de passe doit contenir au moins 8 caractères, une lettre majuscule, une lettre minuscule et un chiffre.');
       return;
     }
+
     try {
       await updateProfile(formData);
       toast({
@@ -101,6 +111,20 @@ const Profile = () => {
                   name="password"
                   type="password"
                   value={formData.password}
+                  placeholder='********'
+                  onChange={handleChange}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium" htmlFor="confirmPassword">
+                  confirmer le mot de passe
+                </label>
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  value={formData.confirmPassword}
                   placeholder='********'
                   onChange={handleChange}
                   className="mt-1"

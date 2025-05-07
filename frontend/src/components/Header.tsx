@@ -1,12 +1,14 @@
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
+import { LogOutIcon, UserIcon } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile"; // Import du hook
 
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { useAuth } from '@/contexts/AuthContext';
-import { LogOutIcon, UserIcon } from 'lucide-react';
-import {Link} from 'react-router-dom';
 const Header: React.FC = () => {
   const { authState, logout } = useAuth();
   const { user } = authState;
+  const isMobile = useIsMobile(); // Utilisation du hook pour détecter le mobile
 
   return (
     <header className="w-full py-4 mb-8">
@@ -16,7 +18,10 @@ const Header: React.FC = () => {
             NoteConnect
           </Link>
           <div className="h-6 w-px bg-border mx-4" />
-          <span className="text-sm text-muted-foreground">Votre vault de notes</span>
+
+          {!isMobile && (
+            <span className="text-sm text-muted-foreground">Votre vault de notes</span>
+          )}
         </div>
         
         {user && (

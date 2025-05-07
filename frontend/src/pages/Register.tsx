@@ -37,7 +37,7 @@ const Register: React.FC = () => {
     try {
       await register(username, password);
     } catch (err) {
-      setError('Erreur lors de l\'inscription');
+      setError('Erreur lors de l\'inscription :\n' + err);
     } finally {
       setLoading(false);
     }

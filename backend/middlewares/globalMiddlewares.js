@@ -21,7 +21,7 @@ const globalMiddlewares = (app) => {
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
         allowedHeaders: ['Content-Type', 'Authorization'],
-    }));
+    }));    
 
     if (config.NODE_ENV === 'development') {
         app.use((req, res, next) => {
@@ -30,6 +30,7 @@ const globalMiddlewares = (app) => {
         });
     }
 
+    app.set('trust proxy', true)
     app.use(session);
     app.use(helmet({
         contentSecurityPolicy: false,

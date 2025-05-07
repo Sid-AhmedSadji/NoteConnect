@@ -14,7 +14,7 @@ const sessionConfig = {
     secure: config.NODE_ENV === 'production',
     httpOnly: true,
     maxAge: config.COOKIES_MAX_AGE,
-    sameSite: 'None',
+    sameSite: 'none',
   },
 };
 

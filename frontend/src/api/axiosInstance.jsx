@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 if (!import.meta.env.VITE_API_URL) 
-    throw new Error('REACT_APP_API_URL is not defined in the environment variables');
+    throw new Error('VITE_API_URL is not defined in the environment variables');
 
 const axiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_URL, 

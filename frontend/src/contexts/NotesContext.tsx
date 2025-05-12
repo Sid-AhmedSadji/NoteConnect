@@ -36,9 +36,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setIsLoading(true);
     
     try {
-      
       const response = await NoteApi.getNote();
-      //make an array of notes
       const notesArray = response.data.map((note: any) => new Note(note));
       setNotes(notesArray);
     } catch (error) {

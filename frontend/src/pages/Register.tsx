@@ -8,9 +8,11 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { LockIcon, MailIcon, UserIcon, AlertCircleIcon } from 'lucide-react';
 import {User} from 'models'
+import { useToast } from "@/hooks/use-toast";
 
 const Register: React.FC = () => {
   const { authState, register } = useAuth();
+  const { toast } = useToast();
   const { isAuthenticated } = authState;
 
   const [username, setUsername] = useState('');
@@ -36,8 +38,17 @@ const Register: React.FC = () => {
     setLoading(true);
     try {
       await register(username, password);
+      toast({
+        title: 'Inscription réussite',
+        description: 'Vous pouvez maintenant vous connecter',
+      });
     } catch (err) {
       setError('Erreur lors de l\'inscription :\n' + err);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de vous inscrire',
+        variant: 'destructive',
+      })
     } finally {
       setLoading(false);
     }

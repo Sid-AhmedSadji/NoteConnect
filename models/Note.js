@@ -49,6 +49,7 @@ export default class Note {
             ...updatedFields,
             modificationCount: (this.modificationCount || 0) + 1,
             date: new Date(),
+            isDead: false
         });
     
         return updatedNote;

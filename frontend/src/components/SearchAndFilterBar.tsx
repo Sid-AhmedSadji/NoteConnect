@@ -30,6 +30,7 @@ const SearchAndFilterBar: React.FC = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9 bg-background/50 border-border/20"
+            onFocus={(e) => e.target.select()}
           />
         </div>
 

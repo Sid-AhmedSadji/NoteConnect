@@ -1,6 +1,3 @@
-Voici une version corrigée et améliorée de ton README, avec une meilleure structuration et fluidité :
-
-```markdown
 # ⚙️ Backend - NoteConnect
 
 ## 🔎 Présentation

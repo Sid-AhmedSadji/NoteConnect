@@ -4,11 +4,11 @@ import { getNotes, createNote, deleteNote, updateNote, calculNotes, pingNotes } 
 
 const router = express.Router();
 
-router.get('/', validateOwnerObjectId,getNotes);
-router.post('/', validateOwnerObjectId,createNote);
+router.get('/', validateOwnerObjectId, getNotes);
+router.post('/', validateOwnerObjectId, createNote);
 router.put('/:id', validateObjectId, validateOwnerObjectId, updateNote);
 router.delete('/:id', validateObjectId, deleteNote);
-router.post('/calcul-notes', validateOwnerObjectId,calculNotes);
-router.post('/ping',  pingNotes);
+router.post('/calcul-notes', validateOwnerObjectId, calculNotes);
+router.post('/ping', pingNotes);
 
 export default router;

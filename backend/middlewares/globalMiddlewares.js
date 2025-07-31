@@ -9,6 +9,8 @@ const globalMiddlewares = (app) => {
 
     app.use(cors({
         origin: (origin, callback) => {
+
+            console.log('CORS Request Origin:', origin);
     
             if (!origin || config.FRONTEND_IP.includes(origin.trim())) {
                 callback(null, true);

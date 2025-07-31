@@ -14,7 +14,7 @@ const connectDB = async () => {
         }
         return database;
     } catch (error) {
-        console.error(`❌ Erreur de connexion MongoDB : ${error.message}`);
+        console.error('❌ Connexion MongoDB échouée : vérifie l\'URI, le réseau ou les paramètres SSL/TLS.');
         process.exit(1);
     }
 };

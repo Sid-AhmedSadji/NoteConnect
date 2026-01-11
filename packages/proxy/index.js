@@ -2,6 +2,7 @@ import express from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { Logger, errorHandler, CustomError } from '@noteconnect/utils';
 import config from './config/config.js';
+import cors from 'cors';
 
 const app = express();
 const PORT = config.PORT;

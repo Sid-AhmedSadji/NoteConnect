@@ -1,6 +1,6 @@
 import { MongoClient } from 'mongodb';
 import config from './env.js';
-import CustomError from '../../utils/CustomError.js';
+import CustomError from '../../../utils/CustomError.js';
 
 let client;
 let database;

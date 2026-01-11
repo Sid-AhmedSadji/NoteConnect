@@ -23,7 +23,7 @@ const globalMiddlewares = (app) => {
                 return callback(null, true);
             }
     
-            const isAllowed = config.FRONTEND_IP.includes(origin.trim());
+            const isAllowed = config.ALLOWED_ORIGINS.includes(origin.trim());
     
             if (isAllowed) {
                 callback(null, true);

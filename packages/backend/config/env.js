@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 
-dotenv.config();
+dotenv.config({ quiet: true });
 
 const requiredVars = [
     'MONGO_URI',
@@ -26,6 +26,6 @@ export default {
     MONGO_USER_COLLECTION_NAME: process.env.MONGO_USER_COLLECTION_NAME,
     MONGO_NOTE_COLLECTION_NAME: process.env.MONGO_NOTE_COLLECTION_NAME,
 
-    FRONTEND_IP: process.env.FRONTEND_IP.split(','),
+    ALLOWED_ORIGINS: process.env.FRONTEND_IP.split(','),
     COOKIES_MAX_AGE: Number(process.env.COOKIES_MAX_AGE) || 24 * 60 * 60 * 1000,
 };

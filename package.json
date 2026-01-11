@@ -1,29 +1,22 @@
 {
   "name": "noteconnect",
   "version": "1.0.0",
-  "main": "index.js",
+  "private": true,
   "scripts": {
-    "start:backend": "npm run start --workspace backend",
-    "start:frontend": "npm run dev --workspace frontend",
-    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
-    "clean": "rimraf node_modules backend/node_modules frontend/node_modules models/node_modules && npm install"
-  },
-  "dependencies": {
-    "concurrently": "^7.6.0",
-    "dotenv": "^16.5.0"
+    "start:backend": "npm --workspace packages/backend run start",
+    "start:frontend": "npm --workspace packages/frontend run dev",
+    "start:proxy": "npm --workspace packages/proxy run start",
+
+    "start": "concurrently -n \"BACK,FRONT,PROXY\" -c \"blue,green,magenta\" \"npm run start:backend\" \"npm run start:frontend\" \"npm run start:proxy\"",
+
+    "clean": "node scripts/clean.js"
   },
   "workspaces": [
-    "backend",
-    "frontend",
+    "packages/*",
     "models",
-    "utils",
-    "frontend-expo"
+    "utils"
   ],
-  "keywords": [],
-  "author": "Dido",
-  "license": "ISC",
-  "description": "Gestionnaire de Lien",
   "devDependencies": {
-    "rimraf": "^6.1.2"
+    "concurrently": "^9.2.1"
   }
 }

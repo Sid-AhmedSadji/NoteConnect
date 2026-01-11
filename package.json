@@ -7,11 +7,12 @@
     "install:frontend": "npm install --workspace frontend --workspace models",
     "start:backend": "npm run start --workspace backend",
     "start:frontend": "npm run dev --workspace frontend",
-    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\""
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "clean": "rimraf node_modules backend/node_modules frontend/node_modules models/node_modules && npm install"
   },
   "dependencies": {
     "concurrently": "^7.6.0",
-    "dotenv": "^16.5.0"  
+    "dotenv": "^16.5.0"
   },
   "workspaces": [
     "backend",
@@ -22,5 +23,8 @@
   "keywords": [],
   "author": "Dido",
   "license": "ISC",
-  "description": "Gestionnaire de Lien"
+  "description": "Gestionnaire de Lien",
+  "devDependencies": {
+    "rimraf": "^6.1.2"
+  }
 }

@@ -5,14 +5,17 @@ import express from 'express';
 import session from './session.js';
 import config from '../config/env.js';
 
+
 const globalMiddlewares = (app) => {
 
     app.use(cors({
         origin: (origin, callback) => {
     
-            if (!origin || config.FRONTEND_IP.includes(origin.trim())) {
+            if ( origin && config.FRONTEND_IP.includes(origin.trim())) {
                 callback(null, true);
             } else {
+                console.log(origin);
+                console.log(config.FRONTEND_IP);
                 callback(new Error("Not allowed by CORS"));
             }
         },

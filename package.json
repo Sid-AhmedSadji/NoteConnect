@@ -16,7 +16,8 @@
   "workspaces": [
     "backend",
     "frontend",
-    "models"
+    "models",
+    "frontend-expo"
   ],
   "keywords": [],
   "author": "Dido",

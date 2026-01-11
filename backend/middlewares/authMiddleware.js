@@ -5,8 +5,6 @@ const authMiddleware = (req, res, next) => {
     return next();
   }
 
-  console.warn('Unauthorized access attempt.');
-
   const error = new CustomError({
     statusCode: 401,
     name: 'Access Denied',

@@ -1,16 +1,17 @@
+import { apiResponse } from '../utils/apiResponse.js';
+
+
 const errorHandler = (err, req, res, next) => {
     const statusCode = err.statusCode || 500;
-    const name = err.name || 'InternalServerError';
+
+    const status =
+        statusCode >= 500 ? 'error' : 'fail';
+
     const message = err.message || 'An unexpected error occurred.';
 
-    if (process.env.NODE_ENV !== 'production') {
-        console.error(`[${statusCode}] ${name}: ${message}`);
-    }
+    res.locals.errorName = err.name || 'Unexpected Error';
 
-    res.status(statusCode).json({
-        error: name,
-        message
-    });
+    apiResponse(res, statusCode, status, message);
 };
 
 export default errorHandler;

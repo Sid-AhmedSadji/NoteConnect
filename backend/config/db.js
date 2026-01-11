@@ -1,5 +1,6 @@
 import { MongoClient } from 'mongodb';
 import config from './env.js';
+import CustomError from '../models/CustomError.js';
 
 let client;
 let database;
@@ -14,16 +15,27 @@ const connectDB = async () => {
         }
         return database;
     } catch (error) {
-        console.error(`❌ Erreur de connexion MongoDB : ${error.message}`);
-        process.exit(1);
+        console.error('❌ Erreur de connexion MongoDB:', error);
+
+        throw new CustomError({
+            statusCode: 500,
+            name: 'Database Connection Error',
+            message: 'Unable to connect to the database',
+        });
     }
 };
 
 const closeDB = async () => {
-    if (client) {
-        await client.close();
-        console.log('🔌 Déconnecté de MongoDB');
+    try {
+        if (client) {
+            await client.close();
+            console.log('🔌 Déconnecté de MongoDB');
+            client = null;
+            database = null;
+        }
+    } catch (error) {
+        console.error('❌ Erreur lors de la fermeture MongoDB:', error);
     }
 };
 
-export { connectDB, closeDB, database as getDb };
+export { connectDB, closeDB };

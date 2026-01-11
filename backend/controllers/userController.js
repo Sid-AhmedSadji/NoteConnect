@@ -3,6 +3,8 @@ import config from '../config/env.js';
 import { User } from 'models';
 import CustomError from '../models/CustomError.js';
 import bcrypt from 'bcrypt';
+import { apiResponse } from '../utils/apiResponse.js';
+
 
 const collectionName = config.MONGO_USER_COLLECTION_NAME;
 
@@ -31,7 +33,7 @@ const createUser = async (req, res, next) => {
         }
 
         const result = await collection.insertOne(user);
-        if (!result || !result.insertedId) {
+        if (!result?.insertedId) {
             throw new CustomError({
                 statusCode: 500,
                 name: 'Database Error',
@@ -39,14 +41,11 @@ const createUser = async (req, res, next) => {
             });
         }
 
-        user._id= result.insertedId;
+        user._id = result.insertedId;
 
-        res.status(201).json({
-            message: 'User created successfully.',
-            data: {
-                _id: result.insertedId,
-                user: user.toJSON({ hidePassword: true }),
-            },
+        apiResponse(res, 201, 'success', 'User created successfully.', {
+            _id: user._id,
+            user: user.toJSON({ hidePassword: true })
         });
     } catch (error) {
         if (config.NODE_ENV === 'development') console.error('Error creating user:', error);
@@ -57,17 +56,14 @@ const createUser = async (req, res, next) => {
 const updateUser = async (req, res, next) => {
     try {
         const objectId = req.objectId;
-        const{username, password} = req.body;
-        const newPassword = await bcrypt.hash(password, 10)
+        const { username, password } = req.body;
 
-
-        const tempUser = new User({
-            username: username,
-            password: newPassword,
-        });
+        const newPassword = await bcrypt.hash(password, 10);
+        const tempUser = new User({ username, password: newPassword });
 
         const updatedData = tempUser.toJSON({ hidePassword: false });
         delete updatedData._id;
+
         const client = await connectDB();
         const collection = client.collection(collectionName);
 
@@ -76,7 +72,6 @@ const updateUser = async (req, res, next) => {
             { $set: updatedData },
             { returnDocument: 'after' }
         );
-
 
         if (!result) {
             throw new CustomError({
@@ -87,13 +82,11 @@ const updateUser = async (req, res, next) => {
         }
 
         const updatedUser = result;
-        if (req.session?.user) req.session.user = updatedUser;
         delete updatedUser.password;
 
-        res.status(200).json({
-            message: 'User updated successfully.',
-            data: updatedUser,
-        });
+        if (req.session?.user) req.session.user = updatedUser;
+
+        apiResponse(res, 200, 'success', 'User updated successfully.', updatedUser);
     } catch (error) {
         if (config.NODE_ENV === 'development') console.error('Error updating user:', error);
         next(error);
@@ -116,7 +109,8 @@ const deleteUser = async (req, res, next) => {
         }
 
         if (req.session) req.session.destroy();
-        res.status(200).json({ message: 'User deleted successfully' });
+
+        apiResponse(res, 200, 'success', 'User deleted successfully');
     } catch (error) {
         if (config.NODE_ENV === 'development') console.error('Error deleting user:', error);
         next(error);
@@ -125,14 +119,15 @@ const deleteUser = async (req, res, next) => {
 
 const me = async (req, res, next) => {
     try {
-        if (req.session?.user) {
-            return res.status(200).json({ message: 'User logged in successfully', data: req.session.user });
+        if (!req.session?.user) {
+            throw new CustomError({
+                statusCode: 401,
+                name: 'Access Denied',
+                message: errorMessages.userNotLoggedIn,
+            });
         }
-        throw new CustomError({
-            statusCode: 401,
-            name: 'Access Denied',
-            message: errorMessages.userNotLoggedIn,
-        });
+
+        apiResponse(res, 200, 'success', 'User logged in successfully', req.session.user);
     } catch (error) {
         if (config.NODE_ENV === 'development') console.error('Error getting user:', error);
         next(error);
@@ -142,6 +137,7 @@ const me = async (req, res, next) => {
 const login = async (req, res, next) => {
     try {
         const { username, password } = req.body;
+
         if (!username || !password) {
             throw new CustomError({
                 statusCode: 400,
@@ -161,13 +157,11 @@ const login = async (req, res, next) => {
                 message: errorMessages.invalidCredentials,
             });
         }
-        
-        delete existingUser.password;
 
-        if (!req.session) req.session = {};
+        delete existingUser.password;
         req.session.user = existingUser;
 
-        res.status(200).json({ message: 'User logged in successfully', data: existingUser });
+        apiResponse(res, 200, 'success', 'User logged in successfully', existingUser);
     } catch (error) {
         if (config.NODE_ENV === 'development') console.error('Error during login:', error);
         next(error);
@@ -176,13 +170,11 @@ const login = async (req, res, next) => {
 
 const logout = async (req, res, next) => {
     try {
-        if (req.session) {
-            req.session.destroy();
-        }
-        res.status(200).json({ message: 'User logged out successfully' });
+        if (req.session) req.session.destroy();
+
+        apiResponse(res, 200, 'success', 'User logged out successfully');
     } catch (error) {
         if (config.NODE_ENV === 'development') console.error('Error during logout:', error);
-        error.status = 500;
         next(error);
     }
 };
@@ -219,7 +211,7 @@ const verifyPassword = async (req, res, next) => {
             });
         }
 
-        res.status(200).json({ message: 'Password verified successfully' });
+        apiResponse(res, 200, 'success', 'Password verified successfully');
     } catch (error) {
         if (config.NODE_ENV === 'development') console.error('Error verifying password:', error);
         next(error);

@@ -12,6 +12,29 @@ Logger.init({
   env: config.NODE_ENV
 });
 
+app.use(cors({
+  origin: (origin, callback) => {
+      if (!origin) {
+          return callback(null, true);
+      }
+
+      const isAllowed = config.ALLOWED_ORIGINS.includes(origin.trim());
+
+      if (isAllowed) {
+          callback(null, true);
+      } else {
+             callback(new CustomError({
+              statusCode: 403,
+              name: 'CORS Error',
+              message: `Origin ${origin} not allowed by CORS policy.`
+          }));
+      }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));  
+
 app.get('/status', (req, res) => res.send('Proxy is running'));
 
 app.use('/proxy', createProxyMiddleware({

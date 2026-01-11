@@ -7,7 +7,7 @@ const requiredVars = [
     'MONGO_DB_NAME',
     'MONGO_USER_COLLECTION_NAME',
     'MONGO_NOTE_COLLECTION_NAME',
-    'FRONTEND_IP',
+    'PROXY_IP',
     'LOG_DIR'
 ];
 

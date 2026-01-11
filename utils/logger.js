@@ -43,6 +43,7 @@ const Logger = {
 
         return [
           chalk.gray(`[${time}]`),
+          chalk.magenta(tokens['remote-addr'](req, res)),
           chalk.cyan.bold(tokens.method(req, res)),
           chalk.white(tokens.url(req, res)),
           statusColor(status),

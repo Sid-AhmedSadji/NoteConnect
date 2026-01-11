@@ -3,7 +3,7 @@ module.exports = {
       {
         name: "nc-backend",
         script: "npm",
-        args: "start:backend",
+        args: "run start:backend",
 
       },
       {

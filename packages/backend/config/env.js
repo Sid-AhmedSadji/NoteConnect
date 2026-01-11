@@ -7,7 +7,7 @@ const requiredVars = [
     'MONGO_DB_NAME',
     'MONGO_USER_COLLECTION_NAME',
     'MONGO_NOTE_COLLECTION_NAME',
-    'PROXY_IP',
+    'FRONTEND_IP',
     'LOG_DIR'
 ];
 
@@ -28,6 +28,6 @@ export default {
     MONGO_USER_COLLECTION_NAME: process.env.MONGO_USER_COLLECTION_NAME,
     MONGO_NOTE_COLLECTION_NAME: process.env.MONGO_NOTE_COLLECTION_NAME,
 
-    ALLOWED_ORIGINS: process.env.PROXY_IP   .split(','),
+    ALLOWED_ORIGINS: process.env.FRONTEND_IP.split(','),
     COOKIES_MAX_AGE: Number(process.env.COOKIES_MAX_AGE) || 24 * 60 * 60 * 1000,
 };

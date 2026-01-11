@@ -1,4 +1,4 @@
-import { apiResponse } from '../utils/apiResponse.js';
+import apiResponse from './apiResponse.js';
 
 
 const errorHandler = (err, req, res, next) => {

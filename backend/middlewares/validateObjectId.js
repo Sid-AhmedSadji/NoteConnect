@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import CustomError from '../models/CustomError.js';
+import {CustomError} from '@noteconnect/utils';
 
 const validateObjectId = (req, res, next) => {
     try {

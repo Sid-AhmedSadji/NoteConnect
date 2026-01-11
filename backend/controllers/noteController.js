@@ -1,10 +1,9 @@
 import { connectDB } from '../config/db.js';
 import config from '../config/env.js';
-import { Note } from 'models';
-import CustomError from '../models/CustomError.js';
+import { Note } from '@noteconnect/models';
 import bcrypt from 'bcrypt';
 import { ObjectId } from 'mongodb';
-import { apiResponse } from '../utils/apiResponse.js';
+import { apiResponse,CustomError } from '@noteconnect/utils';
 
 
 

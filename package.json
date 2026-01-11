@@ -3,8 +3,6 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "install:backend": "npm install --workspace backend --workspace models",
-    "install:frontend": "npm install --workspace frontend --workspace models",
     "start:backend": "npm run start --workspace backend",
     "start:frontend": "npm run dev --workspace frontend",
     "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
@@ -18,6 +16,7 @@
     "backend",
     "frontend",
     "models",
+    "utils",
     "frontend-expo"
   ],
   "keywords": [],

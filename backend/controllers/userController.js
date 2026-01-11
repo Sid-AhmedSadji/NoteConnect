@@ -1,9 +1,8 @@
 import { connectDB } from '../config/db.js';
 import config from '../config/env.js';
-import { User } from 'models';
-import CustomError from '../models/CustomError.js';
+import { User } from '@noteconnect/models';
 import bcrypt from 'bcrypt';
-import { apiResponse } from '../utils/apiResponse.js';
+import { apiResponse, CustomError } from '@noteconnect/utils';
 
 
 const collectionName = config.MONGO_USER_COLLECTION_NAME;

@@ -1,4 +1,4 @@
-import CustomError from '../models/CustomError.js';
+import {CustomError} from '@noteconnect/utils';
 
 const authMiddleware = (req, res, next) => {
   if (req.session?.user) {

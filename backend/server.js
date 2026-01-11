@@ -3,8 +3,8 @@ import config from './config/env.js';
 import globalMiddlewares from './middlewares/globalMiddlewares.js';
 import { closeDB } from './config/db.js';
 import routes from './routes/index.js';
-import errorHandler from './middlewares/errorHandler.js';
-import CustomError from './models/CustomError.js'; 
+
+import {errorHandler,CustomError } from '@noteconnect/utils';
 
 const app = express();
 const PORT = config.PORT;

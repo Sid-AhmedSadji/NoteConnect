@@ -8,7 +8,7 @@ module.exports = {
       },
       {
         name: "nc-proxy",
-        script: "npm run",
+        script: "npm",
         args: "run start:proxy",
       },
       {

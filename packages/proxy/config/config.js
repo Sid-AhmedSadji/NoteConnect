@@ -4,7 +4,8 @@ dotenv.config({quiet: true});
 
 const requiredVars = [
     'BACKEND_URL',
-    'FRONTEND_IP'
+    'FRONTEND_IP',
+    'LOG_DIR',
 ];
 
 requiredVars.forEach((key) => {
@@ -17,8 +18,9 @@ requiredVars.forEach((key) => {
 
 const config = {
 
-    PORT: process.env.PROXY_PORT || 6000,
+    PORT: process.env.PROXY_PORT || 7001,
     NODE_ENV: process.env.NODE_ENV || 'development',
+    LOG_DIR: process.env.LOG_DIR,
     
     BACKEND_TARGET: process.env.BACKEND_URL, 
     

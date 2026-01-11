@@ -21,4 +21,13 @@ axiosInstance.interceptors.response.use(
     }
 );
 
+axiosInstance.interceptors.response.use(
+    (response) => response.data, 
+    (error) => {
+        const message = error.response?.data?.message || error.message || 'Erreur inconnue';
+        console.error('Erreur API :', message);        
+        return Promise.reject(error.response?.data || { message });
+    }
+);
+
 export default axiosInstance;

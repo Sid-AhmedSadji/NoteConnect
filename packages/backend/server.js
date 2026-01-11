@@ -1,12 +1,13 @@
 import express from 'express';
 import config from './config/env.js';
 import globalMiddlewares from './middlewares/globalMiddlewares.js';
-import { closeDB } from './config/db.js';
+import { connectDB,closeDB } from './config/db.js';
 import routes from './routes/index.js';
 
 import {errorHandler,CustomError } from '@noteconnect/utils';
 
 const app = express();
+await connectDB();
 const PORT = config.PORT;
 
 globalMiddlewares(app);

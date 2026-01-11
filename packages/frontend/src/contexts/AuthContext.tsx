@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { AuthState } from '@/types';
-import User from 'models/User';
+import { User } from '@noteconnect/models';
 import UserApi from '@/api/UserApi';
 
 interface AuthContextProps {

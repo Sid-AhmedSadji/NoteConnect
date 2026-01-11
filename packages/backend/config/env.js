@@ -8,6 +8,7 @@ const requiredVars = [
     'MONGO_USER_COLLECTION_NAME',
     'MONGO_NOTE_COLLECTION_NAME',
     'FRONTEND_IP',
+    'LOG_DIR'
 ];
 
 requiredVars.forEach((key) => {
@@ -20,6 +21,7 @@ export default {
     PORT: process.env.PORT || 7000,
     NODE_ENV: process.env.NODE_ENV || 'development',
     SESSION_SECRET: process.env.SESSION_SECRET || 'defaultSecret',
+    LOG_DIR: process.env.LOG_DIR,
 
     MONGO_URI: process.env.MONGO_URI,
     MONGO_DB_NAME: process.env.MONGO_DB_NAME,

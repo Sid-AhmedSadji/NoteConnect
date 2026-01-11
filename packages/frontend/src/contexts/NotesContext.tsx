@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { SortOption, FilterOption } from '@/types';
-import Note from 'models/Note';
+import { Note } from '@noteconnect/models';
 import NoteApi from '@/api/NoteApi';
 import { useAuth } from './AuthContext';
 

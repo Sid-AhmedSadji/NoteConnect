@@ -5,17 +5,16 @@ import express from 'express';
 import session from './session.js';
 import config from '../config/env.js';
 import {CustomError,Logger} from '@noteconnect/utils'; 
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const globalMiddlewares = (app) => {
 
     app.set('trust proxy', true)
 
-
-    Logger(app, path.join(__dirname,'..', 'logs'), config.NODE_ENV);
+    Logger.init({
+        app,
+        logDir: config.LOG_DIR,
+        env: config.NODE_ENV
+    });
 
     app.use(cors({
         origin: (origin, callback) => {

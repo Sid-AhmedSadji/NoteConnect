@@ -50,6 +50,7 @@ app.use('/proxy', createProxyMiddleware({
   changeOrigin: true,
   pathRewrite: { '^/proxy': '' },
   onError: (err, req, res, next) => {
+    console.error('Proxy error:', err);
     next(new CustomError({
       statusCode: 503,
       name: 'Proxy Error',

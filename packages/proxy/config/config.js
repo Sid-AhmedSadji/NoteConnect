@@ -6,6 +6,8 @@ const requiredVars = [
     'BACKEND_URL',
     'FRONTEND_IP',
     'LOG_DIR',
+    'HTTPS_KEY',
+    'HTTPS_CERT'
 ];
 
 requiredVars.forEach((key) => {
@@ -24,7 +26,10 @@ const config = {
     
     BACKEND_TARGET: process.env.BACKEND_URL, 
     
-    ALLOWED_ORIGINS: process.env.FRONTEND_IP ? process.env.FRONTEND_IP.split(',') : []
+    ALLOWED_ORIGINS: process.env.FRONTEND_IP ? process.env.FRONTEND_IP.split(',') : [],
+
+    HTTPS_KEY: process.env.HTTPS_KEY,
+    HTTPS_CERT: process.env.HTTPS_CERT
 };
 
 export default config;

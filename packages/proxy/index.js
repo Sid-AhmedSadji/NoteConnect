@@ -3,6 +3,7 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 import { Logger, errorHandler, CustomError } from '@noteconnect/utils';
 import config from './config/config.js';
 import cors from 'cors';
+import https from 'https';
 
 const app = express();
 const PORT = config.PORT;
@@ -36,6 +37,11 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));  
 
+const httpsOptions = {
+  key: config.HTTPS_KEY ? https.readFileSync(config.HTTPS_KEY) : undefined,
+  cert: config.HTTPS_CERT ? https.readFileSync(config.HTTPS_CERT) : undefined,
+};
+
 app.get('/status', (req, res) => res.send('Proxy is running'));
 
 app.use('/proxy', createProxyMiddleware({
@@ -61,6 +67,6 @@ app.use((req, res, next) => {
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`Proxy running on port ${PORT}`);
+https.createServer(httpsOptions, app).listen(PORT, () => {
+  console.log(`🚀 Proxy server running on port ${PORT}`);
 });

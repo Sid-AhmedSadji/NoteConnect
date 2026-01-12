@@ -41,10 +41,11 @@ const frontendDist = config.FRONTEND_DIST; // ex: /home/freebox/NoteConnect/fron
 app.use(express.static(frontendDist));
 
 // ---- Fallback pour React Router ----
-app.get('/*', (req, res, next) => {
-  if (req.path.startsWith('/proxy')) return next(); // laisse passer les routes du proxy
+app.get('/:path(*)', (req, res, next) => {
+  if (req.path.startsWith('/proxy')) return next();
   res.sendFile(path.join(frontendDist, 'index.html'));
 });
+
 
 // ---- Proxy backend ----
 app.use('/proxy', createProxyMiddleware({

@@ -3,6 +3,8 @@ import config from './config/env.js';
 import globalMiddlewares from './middlewares/globalMiddlewares.js';
 import { connectDB,closeDB } from './config/db.js';
 import routes from './routes/index.js';
+import https from 'https';
+import fs from 'fs';
 
 import {errorHandler,CustomError } from '@noteconnect/utils';
 
@@ -25,8 +27,12 @@ app.use((req, res, next) => {
 });
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+const httpsOptions = {
+    key: fs.readFileSync(config.HTTPS_KEY),
+    cert: fs.readFileSync(config.HTTPS_CERT)
+};
+https.createServer(httpsOptions, app).listen(PORT, () => {
+    console.log(`HTTPS Server running on port ${PORT}`);
 });
 
 process.on('SIGINT', async () => {
@@ -34,3 +40,4 @@ process.on('SIGINT', async () => {
     await closeDB();
     process.exit(0);
 });
+

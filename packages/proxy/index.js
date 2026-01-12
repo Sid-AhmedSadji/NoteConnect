@@ -6,6 +6,8 @@ import cors from 'cors';
 import https from 'https';
 import fs from 'fs';
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 const app = express();
 const PORT = config.PROXY_PORT;
 
@@ -17,16 +19,12 @@ Logger.init({
 
 app.use(cors({
   origin: (origin, callback) => {
-      if (!origin) {
-          return callback(null, true);
-      }
-
+      if (!origin) return callback(null, true);
       const isAllowed = config.ALLOWED_ORIGINS.includes(origin.trim());
-
       if (isAllowed) {
           callback(null, true);
       } else {
-             callback(new CustomError({
+          callback(new CustomError({
               statusCode: 403,
               name: 'CORS Error',
               message: `Origin ${origin} not allowed by CORS policy.`
@@ -34,7 +32,7 @@ app.use(cors({
       }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Ajout d'OPTIONS pour le preflight
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));  
 
@@ -45,13 +43,21 @@ const httpsOptions = {
 
 app.get('/status', (req, res) => res.send('Proxy is running'));
 
-console.log(`Proxying requests to backend at: ${config.BACKEND_URL}`);
+
 
 app.use('/proxy', createProxyMiddleware({
   target: config.BACKEND_URL,
   changeOrigin: true,
-  pathRewrite: { '^/proxy': '' },
+  pathRewrite: { '^/proxy': '' },  
+  secure: false,
+  xfwd: true,
+  
+  onProxyReq: (proxyReq, req, res) => {
+    proxyReq.setHeader('x-forwarded-proto', 'https');
+  },
+  
   onError: (err, req, res, next) => {
+    console.error('Proxy Error:', err);
     next(new CustomError({
       statusCode: 503,
       name: 'Proxy Error',
@@ -72,4 +78,5 @@ app.use(errorHandler);
 
 https.createServer(httpsOptions, app).listen(PORT, () => {
   console.log(`🚀 Proxy server running on port ${PORT}`);
+  console.log(`Backend target: ${config.BACKEND_URL}`);
 });

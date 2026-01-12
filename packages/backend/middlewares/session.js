@@ -2,6 +2,8 @@ import session from 'express-session';
 import config from '../config/env.js';
 import MongoStore from 'connect-mongo';
 
+const isProd = config.NODE_ENV === 'production';
+
 const sessionConfig = {
   secret: config.SESSION_SECRET,
   resave: false,
@@ -11,16 +13,15 @@ const sessionConfig = {
     ttl: config.COOKIES_MAX_AGE / 1000, 
     autoRemove: 'native'
   }),
+
+  proxy: true, 
+  
   cookie: {
     httpOnly: true, 
-    
-    secure: config.NODE_ENV === 'production', 
-    
+    secure: isProd, 
     maxAge: config.COOKIES_MAX_AGE,
-    
-    sameSite: config.NODE_ENV === 'production' ? 'none' : 'lax'
-  },
-  proxy: config.NODE_ENV === 'production' 
+    sameSite: isProd ? 'none' : 'lax'
+  }
 };
 
 export default session(sessionConfig);

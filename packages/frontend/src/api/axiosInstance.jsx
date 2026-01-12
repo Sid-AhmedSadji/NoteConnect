@@ -11,22 +11,20 @@ const axiosInstance = axios.create({
     },
 });
 
-
 axiosInstance.interceptors.response.use(
-    (response) => response,
+    (response) => {
+        return response.data;
+    },
     (error) => {
-        console.error('Erreur dans la requête :', 
-            error.response?.data || error.message || 'Erreur inconnue');  
-        return Promise.reject(error);
-    }
-);
+        const errorData = error.response?.data;
+        const message = errorData?.message || error.message || 'Erreur inconnue';
+        
+        console.error('Erreur API :', {
+            status: error.response?.status,
+            message: message
+        });
 
-axiosInstance.interceptors.response.use(
-    (response) => response.data, 
-    (error) => {
-        const message = error.response?.data?.message || error.message || 'Erreur inconnue';
-        console.error('Erreur API :', message);        
-        return Promise.reject(error.response?.data || { message });
+        return Promise.reject(errorData || { message });
     }
 );
 

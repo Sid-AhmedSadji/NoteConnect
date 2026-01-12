@@ -39,8 +39,8 @@ app.use(cors({
 }));  
 
 const httpsOptions = {
-  key: config.HTTPS_KEY ? https.readFileSync(config.HTTPS_KEY) : undefined,
-  cert: config.HTTPS_CERT ? https.readFileSync(config.HTTPS_CERT) : undefined,
+  key: fs.readFileSync(config.HTTPS_KEY),
+  cert: fs.readFileSync(config.HTTPS_CERT)
 };
 
 app.get('/status', (req, res) => res.send('Proxy is running'));

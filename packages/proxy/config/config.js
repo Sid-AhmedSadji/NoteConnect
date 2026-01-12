@@ -7,7 +7,8 @@ const requiredVars = [
     'FRONTEND_IP',
     'LOG_DIR',
     'HTTPS_KEY',
-    'HTTPS_CERT'
+    'HTTPS_CERT',
+    'FRONTEND_DIST'
 ];
 
 requiredVars.forEach((key) => {
@@ -29,7 +30,9 @@ const config = {
     ALLOWED_ORIGINS: process.env.FRONTEND_IP ? process.env.FRONTEND_IP.split(',') : [],
 
     HTTPS_KEY: process.env.HTTPS_KEY,
-    HTTPS_CERT: process.env.HTTPS_CERT
+    HTTPS_CERT: process.env.HTTPS_CERT,
+
+    FRONTEND_DIST: process.env.FRONTEND_DIST
 };
 
 export default config;

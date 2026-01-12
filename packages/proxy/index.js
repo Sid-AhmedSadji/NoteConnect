@@ -5,46 +5,48 @@ import config from './config/config.js';
 import cors from 'cors';
 import https from 'https';
 import fs from 'fs';
+import path from 'path';
 
 const app = express();
-const PORT = config.PORT;
+const PORT = config.PROXY_PORT || 7000;
 
+// ---- Logger ----
 Logger.init({
   app,
   logDir: config.LOG_DIR,
   env: config.NODE_ENV
 });
 
+// ---- CORS ----
 app.use(cors({
   origin: (origin, callback) => {
-      if (!origin) {
-          return callback(null, true);
-      }
+    if (!origin) return callback(null, true);
 
-      const isAllowed = config.ALLOWED_ORIGINS.includes(origin.trim());
+    const isAllowed = config.FRONTEND_IP.includes(origin.trim());
+    if (isAllowed) return callback(null, true);
 
-      if (isAllowed) {
-          callback(null, true);
-      } else {
-             callback(new CustomError({
-              statusCode: 403,
-              name: 'CORS Error',
-              message: `Origin ${origin} not allowed by CORS policy.`
-          }));
-      }
+    return callback(new CustomError({
+      statusCode: 403,
+      name: 'CORS Error',
+      message: `Origin ${origin} not allowed by CORS policy.`
+    }));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-}));  
+}));
 
-const httpsOptions = {
-  key: fs.readFileSync(config.HTTPS_KEY),
-  cert: fs.readFileSync(config.HTTPS_CERT)
-};
+// ---- Serve frontend static files ----
+const frontendDist = config.FRONTEND_DIST; // ex: /home/freebox/NoteConnect/frontend/dist
+app.use(express.static(frontendDist));
 
-app.get('/status', (req, res) => res.send('Proxy is running'));
+// ---- Fallback pour React Router ----
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/proxy')) return next(); // laisse passer les routes du proxy
+  res.sendFile(path.join(frontendDist, 'index.html'));
+});
 
+// ---- Proxy backend ----
 app.use('/proxy', createProxyMiddleware({
   target: config.BACKEND_TARGET,
   changeOrigin: true,
@@ -58,6 +60,7 @@ app.use('/proxy', createProxyMiddleware({
   }
 }));
 
+// ---- 404 handler ----
 app.use((req, res, next) => {
   next(new CustomError({
     statusCode: 404,
@@ -66,8 +69,18 @@ app.use((req, res, next) => {
   }));
 });
 
+// ---- Error handler ----
 app.use(errorHandler);
 
+// ---- HTTPS server ----
+const httpsOptions = {
+  key: fs.readFileSync(config.HTTPS_KEY),
+  cert: fs.readFileSync(config.HTTPS_CERT)
+};
+
+// Important pour cookies Secure derrière un proxy
+app.set('trust proxy', 1);
+
 https.createServer(httpsOptions, app).listen(PORT, () => {
-  console.log(`🚀 Proxy server running on port ${PORT}`);
+  console.log(`🚀 Proxy + frontend HTTPS running on https://localhost:${PORT}`);
 });

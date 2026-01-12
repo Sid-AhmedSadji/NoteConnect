@@ -9,6 +9,11 @@ module.exports = {
       name: "nc-proxy",
       script: "npm",
       args: "run start:proxy"
+    },
+    {
+      name: "nc-frontend",
+      script: "npm",
+      args: "run start:frontend"
     }
   ]
 };

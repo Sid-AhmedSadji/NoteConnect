@@ -4,6 +4,7 @@ import { Logger, errorHandler, CustomError } from '@noteconnect/utils';
 import config from './config/config.js';
 import cors from 'cors';
 import https from 'https';
+import fs from 'fs';
 
 const app = express();
 const PORT = config.PORT;

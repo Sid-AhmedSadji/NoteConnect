@@ -1,12 +1,17 @@
+// packages/proxy/index.js
+import dotenv from 'dotenv';
+import path from 'path';
+import fs from 'fs';
 import express from 'express';
+import https from 'https';
+import cors from 'cors';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { Logger, errorHandler, CustomError } from '@noteconnect/utils';
-import config from './config/config.js';
-import cors from 'cors';
-import https from 'https';
-import fs from 'fs';
-import path from 'path';
 
+// ---- Config ----
+import config from './config/config.js';
+
+// ---- Express app ----
 const app = express();
 const PORT = config.PROXY_PORT || 7000;
 
@@ -17,11 +22,13 @@ Logger.init({
   env: config.NODE_ENV
 });
 
+// ---- Vérifier backend URL ----
+console.log('Proxying backend requests to:', config.BACKEND_URL);
+
 // ---- CORS ----
 app.use(cors({
   origin: (origin, callback) => {
-    // autoriser requêtes directes du navigateur ou du proxy
-    if (!origin) return callback(null, true);
+    if (!origin) return callback(null, true); // requêtes directes (ex: Postman)
 
     const isAllowed = config.FRONTEND_IP.includes(origin.trim());
     if (isAllowed) return callback(null, true);
@@ -44,7 +51,7 @@ app.use(express.static(frontendDist));
 
 // ---- React Router fallback ----
 app.use((req, res, next) => {
-  if (req.path.startsWith('/proxy')) return next();
+  if (req.path.startsWith('/proxy')) return next(); // laisse passer le proxy
   res.sendFile(path.join(frontendDist, 'index.html'), err => {
     if (err) next(err);
   });

@@ -1,4 +1,3 @@
-// packages/proxy/index.js
 import express from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { Logger, errorHandler, CustomError } from '@noteconnect/utils';
@@ -6,32 +5,50 @@ import config from './config/config.js';
 import cors from 'cors';
 import https from 'https';
 import fs from 'fs';
-import path from 'path';
 
 const app = express();
+const PORT = config.PORT;
 
-// ---- Logger ----
 Logger.init({
   app,
   logDir: config.LOG_DIR,
   env: config.NODE_ENV
 });
 
-// ---- Serve frontend static files ----
-const frontendDist = config.FRONTEND_DIST;
-console.log('Serving frontend from:', frontendDist);
-app.use(express.static(frontendDist));
+app.use(cors({
+  origin: (origin, callback) => {
+      if (!origin) {
+          return callback(null, true);
+      }
 
-// ---- Proxy backend ----
-app.use('/api', cors({ // CORS uniquement sur l'API
-  origin: config.ALLOWED_ORIGINS,
+      const isAllowed = config.ALLOWED_ORIGINS.includes(origin.trim());
+
+      if (isAllowed) {
+          callback(null, true);
+      } else {
+             callback(new CustomError({
+              statusCode: 403,
+              name: 'CORS Error',
+              message: `Origin ${origin} not allowed by CORS policy.`
+          }));
+      }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}), createProxyMiddleware({
-  target: config.BACKEND_URL,
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));  
+
+const httpsOptions = {
+  key: fs.readFileSync(config.HTTPS_KEY),
+  cert: fs.readFileSync(config.HTTPS_CERT)
+};
+
+app.get('/status', (req, res) => res.send('Proxy is running'));
+
+app.use('/proxy', createProxyMiddleware({
+  target: config.BACKEND_TARGET,
   changeOrigin: true,
-  pathRewrite: { '^/api': '' },
+  pathRewrite: { '^/proxy': '' },
   onError: (err, req, res, next) => {
     next(new CustomError({
       statusCode: 503,
@@ -41,22 +58,6 @@ app.use('/api', cors({ // CORS uniquement sur l'API
   }
 }));
 
-// ---- Fallback pour React Router ----
-app.use((req, res, next) => {
-  // Ignore les routes API
-  if (req.path.startsWith('/api')) return next();
-
-  // Vérifie si le fichier existe dans le build
-  const filePath = path.join(frontendDist, req.path);
-  if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-    return res.sendFile(filePath);
-  }
-
-  // Sinon, on renvoie index.html
-  res.sendFile(path.join(frontendDist, 'index.html'));
-});
-
-// ---- 404 handler ----
 app.use((req, res, next) => {
   next(new CustomError({
     statusCode: 404,
@@ -65,18 +66,8 @@ app.use((req, res, next) => {
   }));
 });
 
-// ---- Error handler ----
 app.use(errorHandler);
 
-// ---- HTTPS server ----
-const httpsOptions = {
-  key: fs.readFileSync(config.HTTPS_KEY),
-  cert: fs.readFileSync(config.HTTPS_CERT)
-};
-
-// Important pour cookies Secure derrière un proxy
-app.set('trust proxy', 1);
-
-https.createServer(httpsOptions, app).listen(config.PROXY_PORT, () => {
-  console.log(`🚀 Proxy + frontend HTTPS running on https://localhost:${config.PROXY_PORT}`);
+https.createServer(httpsOptions, app).listen(PORT, () => {
+  console.log(`🚀 Proxy server running on port ${PORT}`);
 });

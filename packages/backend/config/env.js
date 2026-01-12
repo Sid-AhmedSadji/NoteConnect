@@ -8,7 +8,10 @@ const requiredVars = [
     'MONGO_USER_COLLECTION_NAME',
     'MONGO_NOTE_COLLECTION_NAME',
     'FRONTEND_IP',
-    'LOG_DIR'
+    'LOG_DIR',
+    'HTTPS_KEY',
+    'HTTPS_CERT',
+
 ];
 
 requiredVars.forEach((key) => {
@@ -30,4 +33,7 @@ export default {
 
     ALLOWED_ORIGINS: process.env.FRONTEND_IP.split(','),
     COOKIES_MAX_AGE: Number(process.env.COOKIES_MAX_AGE) || 24 * 60 * 60 * 1000,
+
+    HTTPS_KEY: process.env.HTTPS_KEY,
+    HTTPS_CERT: process.env.HTTPS_CERT,
 };

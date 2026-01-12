@@ -29,7 +29,7 @@ app.use('/api', cors({ // CORS uniquement sur l'API
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }), createProxyMiddleware({
-  target: config.BACKEND_TARGET,
+  target: config.BACKEND_URL,
   changeOrigin: true,
   pathRewrite: { '^/api': '' },
   onError: (err, req, res, next) => {

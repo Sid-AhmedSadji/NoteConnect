@@ -20,6 +20,7 @@ Logger.init({
 // ---- CORS ----
 app.use(cors({
   origin: (origin, callback) => {
+    // Autoriser les requêtes sans origin (ex: Postman)
     if (!origin) return callback(null, true);
 
     const isAllowed = config.FRONTEND_IP.includes(origin.trim());
@@ -36,16 +37,12 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
+// Important pour cookies Secure derrière un proxy HTTPS
+app.set('trust proxy', 1);
+
 // ---- Serve frontend static files ----
 const frontendDist = config.FRONTEND_DIST; // ex: /home/freebox/NoteConnect/frontend/dist
 app.use(express.static(frontendDist));
-
-// ---- Fallback pour React Router ----
-app.get('/:path(*)', (req, res, next) => {
-  if (req.path.startsWith('/proxy')) return next();
-  res.sendFile(path.join(frontendDist, 'index.html'));
-});
-
 
 // ---- Proxy backend ----
 app.use('/proxy', createProxyMiddleware({
@@ -60,6 +57,16 @@ app.use('/proxy', createProxyMiddleware({
     }));
   }
 }));
+
+// ---- Fallback pour React Router ----
+app.use((req, res, next) => {
+  // Laisse passer toutes les routes du proxy
+  if (req.path.startsWith('/proxy')) return next();
+
+  res.sendFile(path.join(frontendDist, 'index.html'), err => {
+    if (err) next(err);
+  });
+});
 
 // ---- 404 handler ----
 app.use((req, res, next) => {
@@ -78,9 +85,6 @@ const httpsOptions = {
   key: fs.readFileSync(config.HTTPS_KEY),
   cert: fs.readFileSync(config.HTTPS_CERT)
 };
-
-// Important pour cookies Secure derrière un proxy
-app.set('trust proxy', 1);
 
 https.createServer(httpsOptions, app).listen(PORT, () => {
   console.log(`🚀 Proxy + frontend HTTPS running on https://localhost:${PORT}`);

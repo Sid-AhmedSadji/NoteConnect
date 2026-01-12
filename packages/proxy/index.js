@@ -7,7 +7,7 @@ import https from 'https';
 import fs from 'fs';
 
 const app = express();
-const PORT = config.PORT;
+const PORT = config.PROXY_PORT;
 
 Logger.init({
   app,

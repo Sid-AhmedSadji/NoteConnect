@@ -45,12 +45,13 @@ const httpsOptions = {
 
 app.get('/status', (req, res) => res.send('Proxy is running'));
 
+console.log(`Proxying requests to backend at: ${config.BACKEND_URL}`);
+
 app.use('/proxy', createProxyMiddleware({
   target: config.BACKEND_URL,
   changeOrigin: true,
   pathRewrite: { '^/proxy': '' },
   onError: (err, req, res, next) => {
-    console.error('Proxy error:', err);
     next(new CustomError({
       statusCode: 503,
       name: 'Proxy Error',

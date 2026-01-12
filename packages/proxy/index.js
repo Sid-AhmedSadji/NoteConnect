@@ -42,9 +42,17 @@ app.use('/api', cors({ // CORS uniquement sur l'API
 }));
 
 // ---- Fallback pour React Router ----
-app.get('*', (req, res, next) => {
-  // Si c'est une requête API, on ne sert pas index.html
+app.use((req, res, next) => {
+  // Ignore les routes API
   if (req.path.startsWith('/api')) return next();
+
+  // Vérifie si le fichier existe dans le build
+  const filePath = path.join(frontendDist, req.path);
+  if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+    return res.sendFile(filePath);
+  }
+
+  // Sinon, on renvoie index.html
   res.sendFile(path.join(frontendDist, 'index.html'));
 });
 

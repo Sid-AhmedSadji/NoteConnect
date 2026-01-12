@@ -1,14 +1,13 @@
 import dotenv from 'dotenv';
 
-dotenv.config({ silent: true });
+dotenv.config({ quiet: true });
 
 const requiredVars = [
   'BACKEND_URL',
   'FRONTEND_IP',
   'LOG_DIR',
   'HTTPS_KEY',
-  'HTTPS_CERT',
-  'FRONTEND_DIST'
+  'HTTPS_CERT'
 ];
 
 requiredVars.forEach(key => {
@@ -19,7 +18,7 @@ requiredVars.forEach(key => {
 
 const config = {
   PROXY_PORT: Number(process.env.PROXY_PORT) || 7000,
-  NODE_ENV: process.env.NODE_ENV || 'production',
+  NODE_ENV: process.env.NODE_ENV || 'development',
   LOG_DIR: process.env.LOG_DIR,
 
   BACKEND_URL: process.env.BACKEND_URL,
@@ -29,8 +28,6 @@ const config = {
 
   HTTPS_KEY: process.env.HTTPS_KEY,
   HTTPS_CERT: process.env.HTTPS_CERT,
-
-  FRONTEND_DIST: process.env.FRONTEND_DIST
 };
 
 export default config;

@@ -26,13 +26,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const fetchUser = async () => {
       try {
         const response = await UserApi.me();
-        console.log(response.data);
         setAuthState({
           user: new User(response.data),
           isAuthenticated: true,
           isLoading: false,
         });
-      } catch(error) {
+      } catch (error) {
         setAuthState({
           user: null,
           isAuthenticated: false,
@@ -53,8 +52,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading: false,
       });
     } catch (error) {
-
-      throw error.message;
+      throw error;
     }
   };
 
@@ -62,6 +60,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await UserApi.register({ username, password });
     } catch (error) {
+      throw error;
     }
   };
 
@@ -74,22 +73,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading: false,
       });
     } catch (error) {
-      throw error.message;
+      throw error;
     }
   };
 
-  const updateProfile = async ( data: { username: string; password: string }) => {
+  const updateProfile = async (data: { username: string; password: string }) => {
+    if (!authState.user) {
+      throw new Error('Utilisateur non authentifié');
+    }
+
     try {
-      console.log( data);
-      console.log(authState.user._id);
-      const response = await UserApi.update({ _id: authState.user._id, ...data });
+      const response = await UserApi.update({
+        _id: authState.user._id,
+        ...data,
+      });
+
       setAuthState({
         user: new User(response.data),
         isAuthenticated: true,
         isLoading: false,
       });
     } catch (error) {
-      throw error.message;
+      throw error;
     }
   };
 
@@ -102,7 +107,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading: false,
       });
     } catch (error) {
-      throw error.message;
+      throw error;
     }
   };
 
@@ -110,7 +115,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await UserApi.verifyPassword({ password });
     } catch (error) {
-      throw error.message;
+      throw error;
     }
   };
 

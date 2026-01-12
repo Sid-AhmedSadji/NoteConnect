@@ -34,13 +34,13 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const fetchNotes = async () => {
     setIsLoading(true);
-    
     try {
       const response = await NoteApi.getNote();
       const notesArray = response.data.map((note: any) => new Note(note));
       setNotes(notesArray);
     } catch (error) {
       console.error('Erreur lors du chargement des notes:', error);
+      throw error;
     } finally {
       setIsLoading(false);
     }
@@ -48,7 +48,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   useEffect(() => {
     if (authState.isAuthenticated) {
-      fetchNotes();
+      fetchNotes().catch(() => {});
     } else {
       setNotes([]);
     }
@@ -61,19 +61,16 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     else if (filterOption === 'active') result = result.filter(note => !note.isDead);
     else if (filterOption === 'dead') result = result.filter(note => note.isDead);
 
-    if (searchQuery) {
-      if (searchQuery.trim().length === 0) return;
+    if (searchQuery.trim().length > 0) {
       const rawQuery = searchQuery.trim().toLowerCase();
       const formattedQuery = Note.formatName(searchQuery).toLowerCase();
-  
-      result = result.filter(note => {
-          return (
-              note.name.toLowerCase().includes(rawQuery) ||
-              note.name.toLowerCase().includes(formattedQuery) ||
-              note.link.toLowerCase().includes(rawQuery)
-          );
-      });
-  }
+
+      result = result.filter(note =>
+        note.name.toLowerCase().includes(rawQuery) ||
+        note.name.toLowerCase().includes(formattedQuery) ||
+        note.link.toLowerCase().includes(rawQuery)
+      );
+    }
 
     result.sort((a, b) => {
       if (sortOption === 'name') return a.name.localeCompare(b.name);
@@ -87,11 +84,12 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const updateNote = async (updatedNote: Note) => {
     try {
       await NoteApi.updateNote({ id: updatedNote._id, updateNote: updatedNote });
-      setNotes(prevNotes =>
-        prevNotes.map(n => (n._id === updatedNote._id ? updatedNote : n))
+      setNotes(prev =>
+        prev.map(n => (n._id === updatedNote._id ? updatedNote : n))
       );
     } catch (error) {
-      console.error("Erreur lors de la mise à jour de la note:", error);
+      console.error('Erreur lors de la mise à jour de la note:', error);
+      throw error;
     }
   };
 
@@ -102,6 +100,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setNotes(prev => [newNote, ...prev]);
     } catch (error) {
       console.error("Erreur lors de l'ajout de la note:", error);
+      throw error;
     }
   };
 
@@ -110,7 +109,8 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       await NoteApi.deleteNote({ id });
       setNotes(prev => prev.filter(n => n._id !== id));
     } catch (error) {
-      console.error("Erreur lors de la suppression de la note:", error);
+      console.error('Erreur lors de la suppression de la note:', error);
+      throw error;
     }
   };
 
@@ -120,7 +120,8 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const updatedNotes = await NoteApi.calculNotes();
       setNotes(updatedNotes.data);
     } catch (error) {
-      console.error("Erreur lors du recalcul des notes:", error);
+      console.error('Erreur lors du recalcul des notes:', error);
+      throw error;
     } finally {
       setIsLoading(false);
     }

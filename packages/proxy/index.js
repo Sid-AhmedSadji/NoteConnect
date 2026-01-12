@@ -43,8 +43,6 @@ const httpsOptions = {
 
 app.get('/status', (req, res) => res.send('Proxy is running'));
 
-
-
 app.use('/proxy', createProxyMiddleware({
   target: config.BACKEND_URL,
   changeOrigin: true,
@@ -77,6 +75,6 @@ app.use((req, res, next) => {
 app.use(errorHandler);
 
 https.createServer(httpsOptions, app).listen(PORT, () => {
-  console.log(`🚀 Proxy server running on port ${PORT}`);
-  console.log(`Backend target: ${config.BACKEND_URL}`);
+  console.log(`[${new Date().toLocaleTimeString()}] 🚀 HTTPS Proxy running on port ${PORT}`);
+
 });

@@ -12,7 +12,7 @@ import {
   XIcon,
   SkullIcon
 } from 'lucide-react';
-import { Note } from 'models';
+import { Note } from '@noteconnect/models';
 import { formatDistanceToNow } from 'date-fns';
 import { da, fr } from 'date-fns/locale';
 import {
@@ -94,22 +94,34 @@ const NoteCard: React.FC<NoteCardProps> = ({ note, UpdateNote, onDelete }) => {
             )}
           </div>
           <div className="flex gap-1 ml-2">
-            <Button
+          <Button
               variant="ghost"
               size="icon"
-              className={`h-8 w-8 ${note.liked ? 'text-note-liked' : 'text-muted-foreground'}`}
+              className="h-8 w-8"
               onClick={handleToggleLiked}
             >
-              <HeartIcon size={18} className={note.liked ? 'fill-note-liked' : ''} />
+              <HeartIcon
+                size={18}
+                className={`transition-colors ${
+                  note.liked
+                    ? 'fill-note-liked text-note-liked'
+                    : 'fill-muted-foreground text-muted-foreground'
+                }`}
+              />
             </Button>
             <Button
               variant="ghost"
               size="icon"
-              className={`h-8 w-8 ${note.isDead ? 'text-note-dead' : 'text-muted-foreground'}`}
+              className="h-8 w-8"
               onClick={handleToggleIsDead}
             >
-              <SkullIcon size={18} />
+              <SkullIcon
+                size={18}
+                color ={note.isDead ?  '#DBC223' : '#94A3B8'}
+
+              />
             </Button>
+
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button

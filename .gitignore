@@ -1,5 +1,6 @@
 .qodo
 
+certs/
 
 # Fichiers spécifiques à l'environnement
 .DS_Store

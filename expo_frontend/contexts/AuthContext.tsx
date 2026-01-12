@@ -2,6 +2,7 @@ import UserApi from '@/api/UserApi';
 import { AuthState } from '@/types';
 import User from '@models/User';
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { apiRequest } from '@/libs/axiosInstance'; // <- notre wrapper
 
 interface AuthContextProps {
   authState: AuthState;
@@ -22,17 +23,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isLoading: true,
   });
 
+  /* ----------------------------------------------------------------------- */
+  /* Initial fetch user                                                      */
+  /* ----------------------------------------------------------------------- */
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await UserApi.me();
-        console.log(response.data);
+        const data = await apiRequest(UserApi.me());
         setAuthState({
-          user: new User(response.data),
+          user: new User(data),
           isAuthenticated: true,
           isLoading: false,
         });
-      } catch(error) {
+      } catch {
         setAuthState({
           user: null,
           isAuthenticated: false,
@@ -40,80 +43,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
       }
     };
-
     fetchUser();
   }, []);
 
+  /* ----------------------------------------------------------------------- */
+  /* Auth actions                                                            */
+  /* ----------------------------------------------------------------------- */
   const login = async (username: string, password: string) => {
-    try {
-      const response = await UserApi.login({ username, password });
-      setAuthState({
-        user: new User(response.data),
-        isAuthenticated: true,
-        isLoading: false,
-      });
-    } catch (error) {
-      throw error.response.data.message;
-    }
+    const data = await apiRequest(UserApi.login({ username, password }));
+    setAuthState({ user: new User(data), isAuthenticated: true, isLoading: false });
   };
 
   const register = async (username: string, password: string) => {
-    try {
-      await UserApi.register({ username, password });
-    } catch (error) {
-      throw error.response.data.message;
-    }
+    await apiRequest(UserApi.register({ username, password }));
   };
 
   const logout = async () => {
-    try {
-      await UserApi.logout();
-      setAuthState({
-        user: null,
-        isAuthenticated: false,
-        isLoading: false,
-      });
-    } catch (error) {
-      throw error.response.data.message;
-    }
+    await apiRequest(UserApi.logout());
+    setAuthState({ user: null, isAuthenticated: false, isLoading: false });
   };
 
-  const updateProfile = async ( data: { username: string; password: string }) => {
-    try {
-      console.log( data);
-      console.log(authState.user._id);
-      const response = await UserApi.update({ _id: authState.user._id, ...data });
-      setAuthState({
-        user: new User(response.data),
-        isAuthenticated: true,
-        isLoading: false,
-      });
-    } catch (error) {
-      throw error.response.data.message;
-    }
+  const updateProfile = async (data: { username: string; password: string }) => {
+    if (!authState.user) throw new Error('Utilisateur non connecté');
+    const updated = await apiRequest(UserApi.update({ _id: authState.user._id, ...data }));
+    setAuthState({ user: new User(updated), isAuthenticated: true, isLoading: false });
   };
 
   const deleteProfile = async (_id: string) => {
-    try {
-      await UserApi.delete({ _id });
-      setAuthState({
-        user: null,
-        isAuthenticated: false,
-        isLoading: false,
-      });
-    } catch (error) {
-      throw error.response.data.message;
-    }
+    await apiRequest(UserApi.delete({ _id }));
+    setAuthState({ user: null, isAuthenticated: false, isLoading: false });
   };
 
   const verifyPassword = async (password: string) => {
-    try {
-      await UserApi.verifyPassword({ password });
-    } catch (error) {
-      throw error.response.data.message;
-    }
+    await apiRequest(UserApi.verifyPassword({ password }));
   };
 
+  /* ----------------------------------------------------------------------- */
+  /* Provider                                                                */
+  /* ----------------------------------------------------------------------- */
   return (
     <AuthContext.Provider
       value={{
@@ -133,9 +100,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth doit être utilisé à l'intérieur d'un AuthProvider");
-  }
+  if (!context) throw new Error("useAuth doit être utilisé à l'intérieur d'un AuthProvider");
   return context;
 };
 

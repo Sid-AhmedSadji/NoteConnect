@@ -4,6 +4,7 @@ import Note from '@models/Note';
 import useToast from '@toast/use-toast';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth } from './AuthContext';
+import { apiRequest } from '@/libs/axiosInstance';
 
 interface NotesContextProps {
   notes: Note[];
@@ -34,51 +35,52 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const { authState } = useAuth();
   const { toast } = useToast();
 
-  const fetchNotes = async () => {
-    setIsLoading(true);
+  /* ----------------------------------------------------------------------- */
+  /* Helper pour centraliser appels API + toast                              */
+  /* ----------------------------------------------------------------------- */
+  const handleApiCall = async <T>(apiCall: () => Promise<T>, errorMsg: string): Promise<T | null> => {
     try {
-      const response = await NoteApi.getNote();
-      const notesArray = response.data.map((note: any) => new Note(note));
-      setNotes(notesArray);
-    } catch (error) {
-      console.error('Erreur lors du chargement des notes:', error);
-      toast({
-        title: "Erreur",
-        description: "Erreur lors du chargement des notes",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+      return await apiCall();
+    } catch (error: any) {
+      console.error(errorMsg, error);
+      toast({ title: 'Erreur', description: error.message || errorMsg, variant: 'destructive' });
+      return null;
     }
   };
 
+  /* ----------------------------------------------------------------------- */
+  /* Fetch notes                                                             */
+  /* ----------------------------------------------------------------------- */
+  const fetchNotes = async () => {
+    setIsLoading(true);
+    const data = await handleApiCall(() => apiRequest(NoteApi.getNote()), 'Erreur lors du chargement des notes');
+    if (data) setNotes(data.map((n: any) => new Note(n)));
+    setIsLoading(false);
+  };
+
   useEffect(() => {
-    if (authState.isAuthenticated) {
-      fetchNotes();
-    } else {
-      setNotes([]);
-    }
+    if (authState.isAuthenticated) fetchNotes();
+    else setNotes([]);
   }, [authState.isAuthenticated]);
 
+  /* ----------------------------------------------------------------------- */
+  /* Filtrage, recherche et tri                                              */
+  /* ----------------------------------------------------------------------- */
   useEffect(() => {
     let result = [...notes];
 
-    if (filterOption === 'liked') result = result.filter(note => note.liked);
-    else if (filterOption === 'active') result = result.filter(note => !note.isDead);
-    else if (filterOption === 'dead') result = result.filter(note => note.isDead);
+    if (filterOption === 'liked') result = result.filter(n => n.liked);
+    else if (filterOption === 'active') result = result.filter(n => !n.isDead);
+    else if (filterOption === 'dead') result = result.filter(n => n.isDead);
 
-    if (searchQuery) {
-      if (searchQuery.trim().length === 0) return;
+    if (searchQuery.trim().length > 0) {
       const rawQuery = searchQuery.trim().toLowerCase();
       const formattedQuery = Note.formatName(searchQuery).toLowerCase();
-
-      result = result.filter(note => {
-        return (
-          note.name.toLowerCase().includes(rawQuery) ||
-          note.name.toLowerCase().includes(formattedQuery) ||
-          note.link.toLowerCase().includes(rawQuery)
-        );
-      });
+      result = result.filter(n => 
+        n.name.toLowerCase().includes(rawQuery) ||
+        n.name.toLowerCase().includes(formattedQuery) ||
+        n.link.toLowerCase().includes(rawQuery)
+      );
     }
 
     result.sort((a, b) => {
@@ -90,66 +92,41 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setFilteredNotes(result);
   }, [notes, sortOption, filterOption, searchQuery]);
 
+  /* ----------------------------------------------------------------------- */
+  /* Actions sur les notes                                                   */
+  /* ----------------------------------------------------------------------- */
   const updateNote = async (updatedNote: Note) => {
-    try {
-      await NoteApi.updateNote({ id: updatedNote._id, updateNote: updatedNote });
-      setNotes(prevNotes =>
-        prevNotes.map(n => (n._id === updatedNote._id ? updatedNote : n))
-      );
-    } catch (error) {
-      console.error("Erreur lors de la mise à jour de la note:", error);
-      toast({
-        title: "Erreur",
-        description: "Erreur lors de la mise à jour de la note",
-        variant: "destructive",
-      });
-    }
+    const data = await handleApiCall(
+      () => apiRequest(() => NoteApi.updateNote({ id: updatedNote._id, updateNote: updatedNote })),
+      'Erreur lors de la mise à jour de la note'
+    );
+    if (data) setNotes(prev => prev.map(n => (n._id === updatedNote._id ? updatedNote : n)));
   };
 
   const addNote = async (noteData: Omit<Note, '_id'>) => {
-    try {
-      const response = await NoteApi.createNote({ note: noteData });
-      const newNote = new Note(response.data);
-      setNotes(prev => [newNote, ...prev]);
-    } catch (error) {
-      console.error("Erreur lors de l'ajout de la note:", error);
-      toast({
-        title: "Erreur",
-        description: "Erreur lors de l'ajout de la note",
-        variant: "destructive",
-      });
-    }
+    const data = await handleApiCall(
+      () => apiRequest(() => NoteApi.createNote({ note: noteData })),
+      'Erreur lors de l\'ajout de la note'
+    );
+    if (data) setNotes(prev => [new Note(data), ...prev]);
   };
 
   const deleteNote = async (id: string) => {
-    try {
-      await NoteApi.deleteNote({ id });
-      setNotes(prev => prev.filter(n => n._id !== id));
-    } catch (error) {
-      console.error("Erreur lors de la suppression de la note:", error);
-      toast({
-        title: "Erreur",
-        description: "Erreur lors de la suppression de la note",
-        variant: "destructive",
-      });
-    }
+    const data = await handleApiCall(
+      () => apiRequest(() => NoteApi.deleteNote({ id })),
+      'Erreur lors de la suppression de la note'
+    );
+    if (data !== null) setNotes(prev => prev.filter(n => n._id !== id));
   };
 
   const recalculateNotes = async () => {
     setIsLoading(true);
-    try {
-      const updatedNotes = await NoteApi.calculNotes();
-      setNotes(updatedNotes.data);
-    } catch (error) {
-      console.error("Erreur lors du recalcul des notes:", error);
-      toast({
-        title: "Erreur",
-        description: "Erreur lors du recalcul des notes",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    const data = await handleApiCall(
+      () => apiRequest(() => NoteApi.calculNotes()),
+      'Erreur lors du recalcul des notes'
+    );
+    if (data) setNotes(data.map((n: any) => new Note(n)));
+    setIsLoading(false);
   };
 
   return (
@@ -177,8 +154,6 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
 export const useNotes = () => {
   const context = useContext(NotesContext);
-  if (!context) {
-    throw new Error('useNotes doit être utilisé dans un NotesProvider');
-  }
+  if (!context) throw new Error('useNotes doit être utilisé dans un NotesProvider');
   return context;
 };

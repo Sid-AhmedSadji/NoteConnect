@@ -46,7 +46,7 @@ const httpsOptions = {
 app.get('/status', (req, res) => res.send('Proxy is running'));
 
 app.use('/proxy', createProxyMiddleware({
-  target: config.BACKEND_TARGET,
+  target: config.BACKEND_URL,
   changeOrigin: true,
   pathRewrite: { '^/proxy': '' },
   onError: (err, req, res, next) => {

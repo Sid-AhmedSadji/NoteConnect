@@ -1,34 +1,90 @@
 import express from 'express';
-import path from 'path';
 import { createProxyMiddleware } from 'http-proxy-middleware';
-import fs from 'fs';
+import { Logger, errorHandler, CustomError } from '@noteconnect/utils';
+import config from './config/config.js';
+import cors from 'cors';
 import https from 'https';
+import fs from 'fs';
+import path from 'path';
 
 const app = express();
-const frontendDist = process.env.FRONTEND_DIST;
+const PORT = config.PROXY_PORT || 7000;
 
-// servir les fichiers statiques
-app.use(express.static(frontendDist));
-
-// fallback React Router
-app.use((req, res, next) => {
-  if (req.path.startsWith('/proxy')) return next();
-  res.sendFile(path.join(frontendDist, 'index.html'));
+// ---- Logger ----
+Logger.init({
+  app,
+  logDir: config.LOG_DIR,
+  env: config.NODE_ENV
 });
 
-// proxy backend
-app.use('/proxy', createProxyMiddleware({
-  target: process.env.BACKEND_TARGET,
-  changeOrigin: true,
-  pathRewrite: { '^/proxy': '' },
+// ---- CORS ----
+app.use(cors({
+  origin: (origin, callback) => {
+    // autoriser requêtes directes du navigateur ou du proxy
+    if (!origin) return callback(null, true);
+
+    const isAllowed = config.FRONTEND_IP.includes(origin.trim());
+    if (isAllowed) return callback(null, true);
+
+    return callback(new CustomError({
+      statusCode: 403,
+      name: 'CORS Error',
+      message: `Origin ${origin} not allowed by CORS policy.`
+    }));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-// HTTPS
+// ---- Frontend static files ----
+const frontendDist = path.resolve(config.FRONTEND_DIST);
+console.log('Serving frontend from:', frontendDist);
+app.use(express.static(frontendDist));
+
+// ---- React Router fallback ----
+app.use((req, res, next) => {
+  if (req.path.startsWith('/proxy')) return next();
+  res.sendFile(path.join(frontendDist, 'index.html'), err => {
+    if (err) next(err);
+  });
+});
+
+// ---- Proxy backend ----
+app.use('/proxy', createProxyMiddleware({
+  target: config.BACKEND_URL,
+  changeOrigin: true,
+  pathRewrite: { '^/proxy': '' },
+  onError: (err, req, res, next) => {
+    next(new CustomError({
+      statusCode: 503,
+      name: 'Proxy Error',
+      message: 'Le serveur backend ne répond pas.'
+    }));
+  }
+}));
+
+// ---- 404 handler ----
+app.use((req, res, next) => {
+  next(new CustomError({
+    statusCode: 404,
+    name: 'Not Found',
+    message: 'The requested resource was not found.'
+  }));
+});
+
+// ---- Error handler ----
+app.use(errorHandler);
+
+// ---- HTTPS server ----
 const httpsOptions = {
-  key: fs.readFileSync(process.env.HTTPS_KEY),
-  cert: fs.readFileSync(process.env.HTTPS_CERT),
+  key: fs.readFileSync(config.HTTPS_KEY),
+  cert: fs.readFileSync(config.HTTPS_CERT)
 };
 
-https.createServer(httpsOptions, app).listen(process.env.PROXY_PORT, () => {
-  console.log(`Proxy + frontend running on https://localhost:${process.env.PROXY_PORT}`);
+// Important pour cookies Secure derrière un proxy
+app.set('trust proxy', 1);
+
+https.createServer(httpsOptions, app).listen(PORT, () => {
+  console.log(`🚀 Proxy + frontend HTTPS running on https://localhost:${PORT}`);
 });

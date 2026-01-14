@@ -1,11 +1,6 @@
 {
-  "name": "models",
+  "name": "@noteconnect/models",
   "version": "1.0.0",
   "main": "index.js",
-  "type": "module",
-  "private": true,
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": ""
+  "type": "module"
 }

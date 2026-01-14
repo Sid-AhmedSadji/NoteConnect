@@ -1,25 +1,22 @@
 {
   "name": "noteconnect",
   "version": "1.0.0",
-  "main": "index.js",
+  "private": true,
   "scripts": {
-    "install:backend": "npm install --workspace backend --workspace models",
-    "install:frontend": "npm install --workspace frontend --workspace models",
-    "start:backend": "npm run start --workspace backend",
-    "start:frontend": "npm run dev --workspace frontend",
-    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\""
-  },
-  "dependencies": {
-    "concurrently": "^7.6.0",
-    "dotenv": "^16.5.0"  
+    "start:backend": "npm --workspace packages/backend run start",
+    "start:frontend": "npm --workspace packages/frontend run dev",
+    "start:proxy": "npm --workspace packages/proxy run start",
+
+    "start": "concurrently -n \"BACK,FRONT,PROXY\" -c \"blue,green,magenta\" \"npm run start:backend\" \"npm run start:frontend\" \"npm run start:proxy\"",
+
+    "clean": "node scripts/clean.js"
   },
   "workspaces": [
-    "backend",
-    "frontend",
-    "models"
+    "packages/*",
+    "models",
+    "utils"
   ],
-  "keywords": [],
-  "author": "Dido",
-  "license": "ISC",
-  "description": "Gestionnaire de Lien"
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
 }

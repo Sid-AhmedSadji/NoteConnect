@@ -1,5 +1,6 @@
 .qodo
 
+certs/
 
 # Fichiers spécifiques à l'environnement
 .DS_Store
@@ -40,6 +41,7 @@ config.php
 public/uploads/
 storage/
 tmp/
+var/
 
 # Ignorer tout sauf les fichiers source dans certains dossiers
 !.gitignore

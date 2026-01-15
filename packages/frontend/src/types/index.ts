@@ -1,4 +1,5 @@
-import User from 'models/User'
+import { User } from 'models';
+
 
 export type SortOption = 'name' | 'date' | 'note';
 export type FilterOption = 'all' | 'liked' | 'active' | 'dead';

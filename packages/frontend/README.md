@@ -1,105 +1,112 @@
-# 🌐 Frontend - NoteConnect
+# 🌐 Frontend - NoteConnect (Web)
 
 ## 🔎 Présentation
-Le frontend de **NoteConnect** est une application web développée avec **React**, **Vite**, **ShadCN UI** et **TypeScript**. Elle offre une interface moderne et réactive pour gérer les liens vers des scans de manga.
+
+Le frontend web de **NoteConnect** est développé avec **React + TypeScript + Vite** et utilise **ShadCN UI** pour les composants UI.
+Il permet aux utilisateurs de gérer leurs notes et leurs liens vers des scans de manga via une interface moderne et réactive.
+
+Le frontend intègre :
+
+* **Hooks et Context** (`useAuth`, `useNotes`)
+* **Axios centralisé** pour les appels API
+* **React Query** pour le caching et la gestion des données
+* **Tailwind CSS** pour le design
 
 ---
 
-## 🏗️ Architecture du projet
+## 🏗️ Structure du projet
+
 ```
-frontend/
-├── src/              # Code source de l'application
-├── public/           # Fichiers statiques
-├── package.json      # Gestion des dépendances
-├── tsconfig.json     # Configuration TypeScript
-├── vite.config.js    # Configuration Vite
-├── README.md         # Documentation
+packages/frontend/
+├── public/          # Assets statiques
+├── src/             # Code source
+│   ├── api/         # Wrapper Axios + endpoints
+│   ├── app/         # Entrée de l’application
+│   ├── components/  # Composants UI
+│   ├── contexts/    # AuthContext, NotesContext
+│   ├── libs/        # Axios instance, helpers
+│   ├── models/      # Modèles importés depuis @noteconnect/models
+│   ├── toast/       # Notifications
+│   └── types/       # Types TypeScript
+├── package.json
+├── tsconfig.json
+├── vite.config.ts
+├── tailwind.config.ts
+└── README.md
 ```
 
 ---
 
-## 🚀 Installation et Configuration
+## 🚀 Installation et exécution
 
-### ✅ Prérequis
-Assurez-vous d’avoir installé :
-- **Node.js** (>=16)
-- **npm** (>=8)
+### Prérequis
 
-### 🛠️ Installation des dépendances
-Installez toutes les dépendances du projet :
+* Node.js >=16
+* npm >=8
+
+### Installation des dépendances
+
 ```sh
 npm install
 ```
 
-### ⚙️ Configuration
-Ajoutez un fichier `.env` à la racine du projet frontend pour gérer les variables d’environnement :
+### Configuration
+
+Créez un fichier `.env` à la racine du frontend pour configurer les variables d’environnement :
+
 ```sh
 VITE_API_URL=YOUR_API_URL
 VITE_PORT=PORT
 VITE_ALLOWED_HOSTS=ALLOWED_HOST
 ```
 
----
+### Scripts utiles
 
-## ▶️ Développement et Exécution
+* Démarrer le serveur dev :
 
-### 🔹 Démarrer le serveur de développement
 ```sh
 npm run dev
 ```
-Accessible à l’URL **http://localhost:3000/** (ou le port configuré).
 
-### 🔹 Lancer un aperçu de la build
-```sh
-npm run preview
-```
+Accessible par défaut sur **[http://localhost:5173/](http://localhost:5173/)**
 
-### 🔹 Vérifier et corriger le code
-```sh
-npm run lint
-```
+* Générer la build production :
 
----
-
-## 🏗️ Build et Déploiement
-
-### 🔹 Générer une version optimisée pour la production
 ```sh
 npm run build
 ```
 
-### 🔹 Générer une version en mode développement
+* Générer la build en mode dev :
+
 ```sh
 npm run build:dev
 ```
 
-**Important** : Déployez la version `dist/` générée par Vite sur un serveur web ou une plateforme de hosting.
+* Prévisualiser la build :
+
+```sh
+npm run preview
+```
+
 
 ---
 
-## 🛠️ Technologies utilisées
-- **React** 18
-- **Vite** pour le bundling et le serveur de développement
-- **ShadCN UI** pour les composants UI
-- **Tailwind CSS** pour le design
-- **TypeScript** pour une meilleure maintenabilité du code
-- **ESLint & Prettier** pour assurer la qualité du code
-- **React Router** pour la navigation
-- **TanStack React Query** pour la gestion des requêtes API
-- **Axios** pour les appels HTTP
+## ⚙️ Hooks et Context principaux
+
+### AuthContext (`useAuth`)
+
+Gère : login, register, logout, mise à jour du profil, suppression du compte, vérification du mot de passe.
+
+```ts
+const { authState, login, logout } = useAuth();
+```
+
+### NotesContext (`useNotes`)
+
+Gère : récupération, ajout, mise à jour, suppression des notes, filtrage, tri et recherche.
+
+```ts
+const { notes, addNote, deleteNote } = useNotes();
+```
 
 ---
-
-## 🤝 Contribution
-Les contributions sont les bienvenues ! 🚀
-
-1. **Fork** le dépôt.
-2. Créez une **branche** (`feature/amélioration`).
-3. **Committez** vos modifications (`git commit -m 'Ajout d'une nouvelle fonctionnalité'`).
-4. **Pushez** votre branche (`git push origin feature/amélioration`).
-5. Ouvrez une **Pull Request** ✅.
-
----
-
-## 📜 Licence
-Ce projet est sous licence **ISC**.

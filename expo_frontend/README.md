@@ -1,50 +1,180 @@
-# Welcome to your Expo app 👋
+# 📱 NoteConnect — Application Mobile (Expo)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## 🔎 Présentation
 
-## Get started
+Ce dossier contient l’**application mobile NoteConnect**, développée avec **Expo**, **React Native**, et **TypeScript**.
 
-1. Install dependencies
+Elle consomme la **même API backend** que le frontend web et partage des modèles et types via le monorepo.
+L’état global est géré via **Context + Hooks**, notamment pour **l’authentification** et la **gestion des notes**.
 
-   ```bash
-   npm install
-   ```
+---
 
-2. Start the app
+## 🧱 Stack technique
 
-   ```bash
-   npx expo start
-   ```
+* **Expo CLI ≥ 13.4.1**
+* **React Native**
+* **TypeScript**
+* **Axios** (instance centralisée `libs/axiosInstance`)
+* **Hooks & Context** (`AuthContext`, `NotesContext`)
+* **EAS** (build & distribution)
+* **Monorepo** avec partage de modèles et types (`models/`)
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 🗂️ Architecture du projet
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```txt
+expo_frontend/
+├── api/                # Endpoints API (UserApi, NoteApi…)
+├── app/                # Screens, navigation, logique UI
+├── assets/             # Images, polices, ressources
+├── components/         # Composants réutilisables
+├── contexts/           # Contexts globaux (AuthContext, NotesContext)
+├── libs/               # Helpers / wrappers (axiosInstance)
+├── models/             # Modèles partagés (User, Note…)
+├── toast/              # Notifications / toast messages
+├── types/              # Types TypeScript (AuthState, FilterOption, SortOption…)
+├── app.json            # Config Expo
+├── eas.json            # Config EAS build
+├── package.json
+├── tsconfig.json
+└── README.md
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## 🔐 Authentification
 
-To learn more about developing your project with Expo, look at the following resources:
+L’application utilise un **AuthContext** et le hook `useAuth` :
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+* **Etat global (`authState`)** : utilisateur connecté, chargement
+* **Actions exposées** :
 
-## Join the community
+  * `login(username, password)`
+  * `register(username, password)`
+  * `logout()`
+  * `updateProfile(data)`
+  * `deleteProfile(_id)`
+  * `verifyPassword(password)`
 
-Join our community of developers creating universal apps.
+⚠️ Le hook doit être utilisé **à l’intérieur du `AuthProvider`**.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+---
+
+## 📝 Gestion des notes
+
+Un **NotesContext** gère les notes et leur affichage :
+
+* **Etat global**
+
+  * `notes` : toutes les notes
+  * `filteredNotes` : notes filtrées / triées
+  * `sortOption`, `filterOption`, `searchQuery`
+  * `isLoading`
+
+* **Actions exposées**
+
+  * `addNote(noteData)` : ajouter une note
+  * `updateNote(note)` : mettre à jour une note
+  * `deleteNote(id)` : supprimer une note
+  * `recalculateNotes()` : recalculer toutes les notes
+
+* **Filtrage & tri**
+
+  * `filterOption` : all / liked / active / dead
+  * `sortOption` : name / date / note
+  * recherche par nom ou lien
+
+* **Notifications**
+
+  * Toutes les erreurs API sont capturées et affichées via le toast system (`toast/`)
+
+---
+
+## 🌐 Communication avec l’API
+
+Toutes les requêtes passent par **`apiRequest`** dans `libs/axiosInstance` :
+
+* centralisation des erreurs
+* gestion des headers (auth, token)
+* simplification des hooks et contextes
+
+Exemples d’API :
+
+* `UserApi` pour l’auth
+* `NoteApi` pour les notes
+
+---
+
+## 🧩 Modèles partagés
+
+Les modèles sont importés depuis le workspace `models` :
+
+```ts
+import User from '@models/User';
+import Note from '@models/Note';
+```
+
+* Garantit cohérence backend / web / mobile
+* Évite la duplication de code et des types
+
+---
+
+## ⚙️ Configuration
+
+### Variables d’environnement
+
+```env
+EXPO_PUBLIC_API_URL=
+```
+
+* Accessible via `process.env.EXPO_PUBLIC_API_URL`
+* Documenté dans le README backend
+
+### EAS build
+
+`eas.json` définit :
+
+* **development** : client de dev
+* **preview** : build interne
+* **production** : build auto-incrémenté
+
+---
+
+## ▶️ Lancement en développement
+
+Depuis `expo_frontend/` :
+
+```sh
+npm install
+npx expo start
+```
+
+* Android / iOS / Web via Expo
+* Live reload automatique
+
+---
+
+## 🔗 Dépendances avec le backend
+
+* L’application mobile consomme l’API backend (`packages/backend`)
+* Toute modification de l’API doit être reflétée dans :
+
+  * `api/`
+  * `contexts/` et hooks (`useAuth`, `useNotes`…)
+
+---
+
+## 📎 Liens utiles
+
+* 🧠 Backend API : `packages/backend/README.md`
+* 🌐 Frontend Web : `packages/frontend/README.md`
+* 📦 Modèles partagés : `models/README.md`
+
+---
+
+## ✅ Statut
+
+L’application mobile est **fonctionnelle**, connectée à l’API backend et prête pour **EAS build / production**.
+
+---

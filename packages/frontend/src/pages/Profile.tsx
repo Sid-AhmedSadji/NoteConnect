@@ -7,7 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { User, Settings, AlertCircleIcon } from 'lucide-react';
 import Header from '@/components/Header';
-import { User as MyUser } from '@noteconnect/models';
+import { User as MyUser } from 'models';
 
 const Profile = () => {
   const { authState, updateProfile, logout } = useAuth();

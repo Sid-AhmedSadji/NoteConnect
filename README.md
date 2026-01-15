@@ -1,89 +1,131 @@
 # 📌 NoteConnect
 
 ## 🔎 Présentation
-**NoteConnect** est une application permettant aux utilisateurs de stocker et organiser des liens vers des scans de manga de manière efficace. Conçu comme un **monorepo**, il regroupe trois modules principaux : **backend**, **frontend** et **models**, garantissant une architecture modulaire et évolutive.
+
+**NoteConnect** est une application permettant aux utilisateurs de stocker et organiser des liens vers des scans de manga de manière efficace.
+Conçu comme un **monorepo**, il regroupe plusieurs modules principaux : **backend**, **frontend web**, **frontend mobile (Expo)** et **proxy** (HTTPS), garantissant une architecture modulaire et évolutive.
 
 ---
 
 ## 🏗️ Architecture du projet
+
 ```
 noteconnect/
-├── backend/   # API et gestion des données
-├── frontend/  # Interface utilisateur
-├── models/    # Modèles et structures de données
+├── packages/
+│   ├── backend/        # API Node.js + Express + MongoDB
+│   ├── frontend/       # Frontend web React + Vite + ShadCN UI
+│   ├── expo_frontend/  # Application mobile Expo + React Native
+│   └── proxy/          # Proxy HTTPS (remplacé par Nginx en prod)
+├── models/             # Modèles partagés (User, Note)
+├── utils/              # Utilitaires partagés (Logger, CustomError...)
+├── scripts/            # Scripts utiles (ex: clean.js)
+├── package.json        # Workspaces et scripts racine
+└── README.md           # Documentation du monorepo
 ```
-- **Backend** : API Node.js gérant les données et la logique métier.
-- **Frontend** : Interface utilisateur développée avec React/Vue.js.
-- **Models** : Définition des structures de données et schémas.
 
-🔗 **Accès rapide aux README des modules** :
-- [Backend](backend/README.md)
-- [Frontend](frontend/README.md)
-- [Models](models/README.md)
+---
+
+## 🔗 Accès rapide aux README des modules
+
+* [Backend](./packages/backend/README.md)
+* [Frontend web](./packages/frontend/README.md)
+* [Frontend mobile (Expo)](./expo_frontend/README.md)
+* [Proxy (HTTPS)](./packages/proxy/README.md)
 
 ---
 
 ## 🚀 Installation et Configuration
 
 ### ✅ Prérequis
-Assurez-vous d’avoir installé :
-- **Node.js** (>=16)
-- **npm** (>=8)
+
+* Node.js >=16
+* npm >=8
+* MongoDB pour le backend
+* Certificats HTTPS si tu veux lancer le proxy
 
 ### 🛠️ Installation des dépendances
-Installez toutes les dépendances du projet avec :
+
+Depuis la racine du projet, installe tout le monorepo :
+
 ```sh
 npm install
 ```
+
 Pour installer uniquement un module spécifique :
+
 ```sh
 npm run install:backend
 npm run install:frontend
+npm run install:expo_frontend
+npm run install:proxy
 ```
 
 ### ⚙️ Configuration
-Créez **un fichier** `.env` pour le frontend et **un fichier** `.env` pour le backend afin de configurer les variables d’environnement.
+
+Chaque module utilise ses propres fichiers `.env` pour gérer les variables d’environnement :
+
+* **Backend** : MongoDB, session, ports, frontend autorisé…
+* **Frontend web / Expo** : URL API, ports et options CORS si besoin
+* **Proxy** : `PROXY_PORT`, backend cible, origines autorisées, certificats HTTPS
 
 ---
 
-## ▶️ Utilisation
+## ▶️ Scripts principaux
 
-### 🔹 Démarrer uniquement le backend
+### Lancer uniquement un module
+
 ```sh
-npm run start:backend
+npm run start:backend      # API
+npm run start:frontend     # Web
+npm run start:proxy        # Proxy (HTTPS)
 ```
 
-### 🔹 Démarrer uniquement le frontend
-```sh
-npm run start:frontend
-```
+### Lancer tous les modules simultanément
 
-### 🔹 Lancer l’ensemble du projet simultanément
 ```sh
 npm run start
 ```
 
+* Exécuté avec **concurrently**
+* Les couleurs : `BACK` (bleu), `FRONT` (vert), `PROXY` (magenta)
+
+### Nettoyage
+
+```sh
+npm run clean
+```
+
+* Supprime les fichiers temporaires générés par les modules
+
 ---
 
 ## 🛠️ Technologies utilisées
-NoteConnect repose sur une stack moderne :
-- **Node.js** & **Express.js** pour le backend
-- **React.js / Vue.js** pour le frontend
-- **MongoDB** pour la base de données
-- **dotenv** pour la gestion des configurations
-- **concurrently** pour l'exécution parallèle des services
+
+| Module        | Technologies                                                                                     |
+| ------------- | ------------------------------------------------------------------------------------------------ |
+| Backend       | Node.js, Express, MongoDB, bcrypt, connect-mongo, helmet, cookie-parser, express-session         |
+| Frontend web  | React, TypeScript, Vite, ShadCN UI, Radix UI, Tailwind CSS, Axios, React Query, Recharts, Sonner |
+| Expo frontend | React Native, Expo, TypeScript, Axios, React Query, Hooks `useAuth` / `useNotes`                 |
+| Proxy         | Express, http-proxy-middleware, HTTPS, CORS, Logger, CustomError                                 |
+
+---
+
+## 💡 Notes importantes
+
+* Le **proxy** HTTPS existe mais est remplacé par **Nginx** en production.
+* Tous les modules utilisent des **modèles partagés** (`@noteconnect/models`) pour garantir la cohérence des données.
+* Les appels API côté frontend passent toujours par **l’instance Axios centralisée** (`libs/axiosInstance`) pour la gestion des erreurs et des headers.
 
 ---
 
 ## 🤝 Contribution
-Les contributions sont les bienvenues ! Pour améliorer le projet :
-1. **Fork** le dépôt.
-2. Créez une **branche** (`feature/amélioration`).
-3. **Committez** vos modifications (`git commit -m 'Ajout d'une nouvelle fonctionnalité'`).
-4. **Pushez** votre branche (`git push origin feature/amélioration`).
-5. Ouvrez une **Pull Request** 🚀.
+
+Les contributions sont les bienvenues ! 🚀
+
+1. **Fork** le dépôt
+2. Créez une **branche** (`feature/amélioration`)
+3. **Committez** vos modifications
+4. **Pushez** votre branche
+5. Ouvrez une **Pull Request** ✅
 
 ---
-
-## 📜 Licence
-Ce projet est sous licence **ISC**.

@@ -22,7 +22,7 @@ const Logger = {
       }
 
       const accessLogStream = fs.createWriteStream(
-        path.join(logDir, 'access.log'),
+        path.join(logDir, '/access.log'),
         { flags: 'a' }
       );
 

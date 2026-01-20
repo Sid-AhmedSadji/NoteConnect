@@ -9,7 +9,9 @@
 
     "start": "concurrently -n \"BACK,FRONT,PROXY\" -c \"blue,green,magenta\" \"npm run start:backend\" \"npm run start:frontend\" \"npm run start:proxy\"",
 
-    "clean": "node scripts/clean.js"
+    "clean": "node scripts/clean.js",
+    "backup": "node scripts/backup.js"
+
   },
   "workspaces": [
     "packages/*",

@@ -6,12 +6,9 @@
     "start:backend": "npm --workspace packages/backend run start",
     "start:frontend": "npm --workspace packages/frontend run dev",
     "start:proxy": "npm --workspace packages/proxy run start",
-
     "start": "concurrently -n \"BACK,FRONT,PROXY\" -c \"blue,green,magenta\" \"npm run start:backend\" \"npm run start:frontend\" \"npm run start:proxy\"",
-
     "clean": "node scripts/clean.js",
-    "backup": "node scripts/backup.js"
-
+    "backup": "node infra/backup/backup.js"
   },
   "workspaces": [
     "packages/*",
@@ -20,5 +17,8 @@
   ],
   "devDependencies": {
     "concurrently": "^9.2.1"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3"
   }
 }

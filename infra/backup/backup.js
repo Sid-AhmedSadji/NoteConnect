@@ -11,7 +11,7 @@ const date = new Date();
 const month = String(date.getMonth() + 1).padStart(2, "0");
 const year = date.getFullYear();
 
-const backupDir = path.join(__dirname, `${process.env.VAR_DIR}/backups`);
+const backupDir = `${process.env.VAR_DIR}/backups`;
 const backupPath = path.join(backupDir, `${process.env.MONGO_DB_NAME}_${year}_${month}`);
 
 if (!fs.existsSync(backupDir)) {

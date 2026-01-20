@@ -4,14 +4,14 @@ const fs = require("fs");
 
 // load env
 require("dotenv").config({
-  path: path.join(__dirname, "../packages/backend/.env")
+  path: path.join(__dirname, "../../packages/backend/.env")
 });
 
 const date = new Date();
 const month = String(date.getMonth() + 1).padStart(2, "0");
 const year = date.getFullYear();
 
-const backupDir = path.join(__dirname, "../var/backups");
+const backupDir = path.join(__dirname, `${process.env.VAR_DIR}/backups`);
 const backupPath = path.join(backupDir, `${process.env.MONGO_DB_NAME}_${year}_${month}`);
 
 if (!fs.existsSync(backupDir)) {

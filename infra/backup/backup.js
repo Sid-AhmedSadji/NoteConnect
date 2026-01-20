@@ -16,10 +16,8 @@
   const backupLogDir = `${process.env.VAR_DIR}/logs/backups`;
   const backupPath = path.join(backupDir, `${process.env.MONGO_DB_NAME}_${year}_${month}`);
 
-  if (!fs.existsSync(backupDir)) {
-    fs.mkdirSync(backupDir, { recursive: true });
-    fs.mkdirSync(backupLogDir, { recursive: true });
-  }
+  fs.mkdirSync(backupDir, { recursive: true });
+  fs.mkdirSync(backupLogDir, { recursive: true });
 
   try {
     execSync(`mongodump --uri="${process.env.MONGO_URI}" --db="${process.env.MONGO_DB_NAME}" --out="${backupPath}"`, { stdio: "inherit" });

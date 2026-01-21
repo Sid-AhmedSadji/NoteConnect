@@ -69,6 +69,7 @@ const NotesList: React.FC = () => {
               note={item}
               UpdateNote={handleUpdate}
               onDelete={handleDelete}
+              key={item._id}
             />
         ))}
       </View>

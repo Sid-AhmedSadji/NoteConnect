@@ -2,7 +2,7 @@ import UserApi from '@/api/UserApi';
 import { AuthState } from '@/types';
 import User from '@models/User';
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { apiRequest } from '@/libs/axiosInstance'; // <- notre wrapper
+import { apiRequest } from '@/libs/axiosInstance';
 
 interface AuthContextProps {
   authState: AuthState;
@@ -23,64 +23,54 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isLoading: true,
   });
 
-  /* ----------------------------------------------------------------------- */
-  /* Initial fetch user                                                      */
-  /* ----------------------------------------------------------------------- */
+  const handleApiCall = async <T>(apiCall: () => Promise<{ status: string; message: string; data: T }>, errorMsg: string): Promise<T | null> => {
+    try {
+      const response = await apiCall();
+      return response;
+    } catch (error: any) {
+      console.error(errorMsg, error?.message ?? error);
+      return null;
+    }
+  };
+
   useEffect(() => {
     const fetchUser = async () => {
-      try {
-        const data = await apiRequest(UserApi.me());
-        setAuthState({
-          user: new User(data),
-          isAuthenticated: true,
-          isLoading: false,
-        });
-      } catch {
-        setAuthState({
-          user: null,
-          isAuthenticated: false,
-          isLoading: false,
-        });
-      }
+      const data = await handleApiCall(() => apiRequest(UserApi.me()), 'Erreur lors de la récupération de l’utilisateur');
+      if (data) setAuthState({ user: new User(data), isAuthenticated: true, isLoading: false });
+      else setAuthState({ user: null, isAuthenticated: false, isLoading: false });
     };
     fetchUser();
   }, []);
 
-  /* ----------------------------------------------------------------------- */
-  /* Auth actions                                                            */
-  /* ----------------------------------------------------------------------- */
   const login = async (username: string, password: string) => {
-    const data = await apiRequest(UserApi.login({ username, password }));
-    setAuthState({ user: new User(data), isAuthenticated: true, isLoading: false });
+    const data = await handleApiCall(() => apiRequest(UserApi.login({ username, password })), 'Erreur lors de la connexion');
+    if (data) setAuthState({ user: new User(data), isAuthenticated: true, isLoading: false });
   };
 
   const register = async (username: string, password: string) => {
-    await apiRequest(UserApi.register({ username, password }));
+    await handleApiCall(() => apiRequest(UserApi.register({ username, password })), 'Erreur lors de l\'inscription');
   };
 
   const logout = async () => {
-    await apiRequest(UserApi.logout());
+    await handleApiCall(() => apiRequest(UserApi.logout()), 'Erreur lors de la déconnexion');
     setAuthState({ user: null, isAuthenticated: false, isLoading: false });
   };
 
   const updateProfile = async (data: { username: string; password: string }) => {
     if (!authState.user) throw new Error('Utilisateur non connecté');
-    const updated = await apiRequest(UserApi.update({ _id: authState.user._id, ...data }));
-    setAuthState({ user: new User(updated), isAuthenticated: true, isLoading: false });
+    const updated = await handleApiCall(() => apiRequest(UserApi.update({ _id: authState.user._id, ...data })), 'Erreur lors de la mise à jour du profil');
+    if (updated) setAuthState({ user: new User(updated), isAuthenticated: true, isLoading: false });
   };
 
   const deleteProfile = async (_id: string) => {
-    await apiRequest(UserApi.delete({ _id }));
+    await handleApiCall(() => apiRequest(UserApi.delete({ _id })), 'Erreur lors de la suppression du profil');
     setAuthState({ user: null, isAuthenticated: false, isLoading: false });
   };
 
   const verifyPassword = async (password: string) => {
-    await apiRequest(UserApi.verifyPassword({ password }));
+    await handleApiCall(() => apiRequest(UserApi.verifyPassword({ password })), 'Erreur lors de la vérification du mot de passe');
   };
 
-  /* ----------------------------------------------------------------------- */
-  /* Provider                                                                */
-  /* ----------------------------------------------------------------------- */
   return (
     <AuthContext.Provider
       value={{

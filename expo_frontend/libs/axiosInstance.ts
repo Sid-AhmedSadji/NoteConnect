@@ -42,7 +42,6 @@ const axiosInstance = axios.create({
 /* ----------------------------------------------------------------------- */
 axiosInstance.interceptors.request.use(
   async (config: AxiosRequestConfig) => {
-    console.log('[axios] Preparing request to',config.baseURL,config.url);
     try {
       const cookie = await getStoredCookie();
       if (cookie) {

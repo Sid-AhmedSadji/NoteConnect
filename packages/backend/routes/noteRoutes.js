@@ -9,6 +9,6 @@ router.post('/', validateOwnerObjectId,createNote);
 router.put('/:id', validateObjectId, validateOwnerObjectId, updateNote);
 router.delete('/:id', validateObjectId, deleteNote);
 router.post('/calcul-notes', validateOwnerObjectId,calculNotes);
-router.post('/ping',  pingNotes);
+router.post('/ping',validateOwnerObjectId, pingNotes);
 
 export default router;

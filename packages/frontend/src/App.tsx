@@ -10,6 +10,7 @@ import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { NotesProvider, useNotes } from "./contexts/NotesContext";
+import ChecksReview from "./pages/ChecksReview";
 
 const queryClient = new QueryClient();
 
@@ -60,6 +61,14 @@ const App = () => (
                     <Profile />
                   </ProtectedRoute>
                 } 
+              />
+              <Route
+                path="/checks-review"
+                element={
+                  <ProtectedRoute>
+                    <ChecksReview />
+                  </ProtectedRoute>
+                }
               />
               <Route path="*" element={<NotFound />} />
             </Routes>

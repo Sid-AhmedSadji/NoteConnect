@@ -1,12 +1,11 @@
 import axiosInstance from './axiosInstance';
-import { Note } from '@noteconnect/models';
 
 const NoteApi = {
   getNote: async () => {
     return await axiosInstance.get('/Notes');
   },
 
-  createNote: async ({ note }: { note: Omit<Note, '_id'> }) => {
+  createNote: async ({ note }) => {
     if (!note) throw new Error('Note is required');
     return await axiosInstance.post('/Notes', note);
   },

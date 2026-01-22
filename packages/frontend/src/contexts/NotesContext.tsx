@@ -48,6 +48,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   useEffect(() => {
     if (authState.isAuthenticated) {
+
       fetchNotes().catch(() => {});
     } else {
       setNotes([]);

@@ -1,6 +1,9 @@
 export default class Note {
 
     static FIELD_RULES = {
+        _id : {
+            validate: v => v === null || (typeof v === 'string' && v.length > 0)
+        },
         link: {
             required: true,
             validate: v => typeof v === 'string' && /^(https?:\/\/)/.test(v),

@@ -1,11 +1,11 @@
 import express from 'express';
-import { validateObjectId, validateOwnerObjectId } from '../middlewares/validateObjectId.js';
-import { getChecks, getChecksPending, validateCheck } from '../controllers/checkController.js';
+import { validateObjectId } from '../middlewares/validateObjectId.js';
+import { getChecks, getChecksPending, validateCheck, actualiseCheck } from '../controllers/checkController.js';
 const router = express.Router();
 
 router.get('/',getChecks);
 router.get('/pending',getChecksPending);
-router.post('/validate/:id', validateCheck);
-
+router.post('/validate/:id',validateObjectId,validateCheck);
+router.put('/refresh/:id',validateObjectId,actualiseCheck);
 
 export default router;

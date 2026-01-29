@@ -3,9 +3,9 @@ import {CustomError} from '@noteconnect/utils';
 
 const validateObjectId = (req, res, next) => {
     try {
-        if (!req.params.id) throw new CustomError({ statusCode: 400, name: 'Bad Request', message: 'A User ID is required in the request parameters.' });
+        if (!req.params.id) throw new CustomError({ statusCode: 400, name: 'Bad Request', message: 'A ID is required in the request parameters.' });
 
-        if (!ObjectId.isValid(req.params.id)) throw new CustomError({ statusCode: 400, name: 'Bad Request', message: 'The User ID provided is not in a valid format.' });
+        if (!ObjectId.isValid(req.params.id)) throw new CustomError({ statusCode: 400, name: 'Bad Request', message: 'The ID provided is not in a valid format.' });
 
         req.objectId = new ObjectId(req.params.id);
         next();

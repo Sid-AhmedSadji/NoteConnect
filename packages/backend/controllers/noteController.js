@@ -1,95 +1,15 @@
 import { connectDB } from '../config/db.js';
 import config from '../config/env.js';
-import { Note, Check } from '@noteconnect/models';
+import { Note } from '@noteconnect/models';
 import { apiResponse, CustomError, getSchemaByDomain } from '@noteconnect/utils';
+import {buildCheckFromNote, upsertCheck} from './checkController.js'
 
 const collectionName = config.MONGO_NOTE_COLLECTION_NAME;
-const checkCollectionName = 'Checks';
+const checkCollectionName = config.MONGO_CHECK_COLLECTION_NAME;
 
 const errorMessages = {
   noteNotFound: 'Note not found',
 };
-
-/* ======================================================
-   UTILS CHECK
-====================================================== */
-
-function extractChapter(url) {
-  const schemaResult = getSchemaByDomain(url);
-
-  if (!schemaResult) {
-    return { method: null, chapter: null, error: 'Schema not found' };
-  }
-
-  const { schema } = schemaResult;
-
-  if (schema.chapter.source === 'url') {
-    for (const pattern of schema.chapter.patterns) {
-      const match = url.match(pattern);
-      if (match) {
-        return { method: 'regex', chapter: match[1], error: null };
-      }
-    }
-    return { method: 'regex', chapter: null, error: 'No regex match' };
-  }
-
-  if (schema.chapter.source === 'api') {
-    return { method: 'api', chapter: null, error: 'API not implemented yet' };
-  }
-
-  return { method: null, chapter: null, error: 'Unknown method' };
-}
-
-async function checkLink(link) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 5000);
-
-  try {
-    const res = await fetch(link, { method: 'HEAD', signal: controller.signal });
-    clearTimeout(timeout);
-
-    if (res.ok) return false;
-
-    const deadStatuses = [404, 403, 410];
-    return deadStatuses.includes(res.status);
-  } catch {
-    return true;
-  }
-}
-
-async function buildCheckFromNote(note) {
-  const start = Date.now();
-
-  const chapterResult = extractChapter(note.link);
-  const isDead = await checkLink(note.link);
-
-  const durationMs = Date.now() - start;
-  const domain = note.domain ?? new URL(note.link).hostname;
-
-  return new Check({
-    url: note.link,
-    domain,
-    method: chapterResult.method,
-    success: null,
-    isDead,
-    chapter: chapterResult.chapter,
-    error: chapterResult.error,
-    durationMs,
-    createdAt: new Date(),
-  }).toJSON();
-}
-
-async function upsertCheck(checksCollection, check) {
-  await checksCollection.updateOne(
-    { url: check.url },
-    { $set: check },
-    { upsert: true }
-  );
-}
-
-/* ======================================================
-   CONTROLLERS
-====================================================== */
 
 const getNotes = async (req, res, next) => {
   try {
@@ -173,8 +93,6 @@ const updateNote = async (req, res, next) => {
       { returnDocument: 'after' }
     );
 
-    console.log('Updated note result:', result);
-
     if (!result) {
       throw new CustomError({
         statusCode: 404,
@@ -183,7 +101,6 @@ const updateNote = async (req, res, next) => {
       });
     }
 
-    // 🔁 CHECK AUTOMATIQUE APRÈS UPDATE
     const check = await buildCheckFromNote(result);
     await upsertCheck(checksCollection, check);
 
@@ -264,6 +181,7 @@ const pingNotes = async (req, res, next) => {
     const notes = await notesCollection.find({}).toArray();
 
     const checks = await Promise.all(notes.map(buildCheckFromNote));
+    console.log(checks[0]);
 
     const bulkOps = checks.map(check => ({
       updateOne: {

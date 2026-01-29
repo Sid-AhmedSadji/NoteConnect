@@ -14,6 +14,15 @@ export default class Note {
         },
         date: {
             default: () => new Date(),
+
+            transform: v => {
+                if (typeof v === 'string' || typeof v === 'number') {
+                const parsed = new Date(v);
+                return isNaN(parsed) ? v : parsed;
+                }
+                return v;
+            },
+
             validate: v => v instanceof Date && !isNaN(v)
         },
         isDead: {
@@ -26,7 +35,7 @@ export default class Note {
         },
         note: {
             default: 0,
-            validate: v => typeof v === 'number' && v >= 0 && v <= 100
+            validate: v => typeof v === 'number' && v >= -20 && v <= 100
         },
         liked: {
             default: false,
@@ -38,7 +47,7 @@ export default class Note {
             error: 'Invalid owner'
         },
         domain: {
-            derive: obj => Note.extractDomain(obj.link),
+            derive: obj => Note.extractDomain(obj.link),    
             validate: v => v === null || typeof v === 'string'
         },
         chapter: {
@@ -76,6 +85,7 @@ export default class Note {
             }
 
             if (rules.validate && !rules.validate(value)) {
+                console.log('Validation failed for field:', field, 'with value:', value, 'in Note:', input);
                 throw new Error(rules.error || `Invalid field: ${field}`);
             }
 
@@ -113,7 +123,10 @@ export default class Note {
 
     toJSON() {
         return Object.fromEntries(
-            Object.keys(Note.FIELD_RULES).map(k => [k, this[k]])
+            Object.keys(Note.FIELD_RULES)
+                .filter(k => this[k] !== null && this[k] !== undefined)
+                .map(k => [k, this[k]])
         );
     }
+
 }
